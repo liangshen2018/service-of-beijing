@@ -5,30 +5,29 @@
 </template>
 
 <script>
-import list from '@/common/servicePack'
-import servicePackItem from '@/components/servicePackItem/index'
+import list from "@/common/servicePack";
+import servicePackItem from "@/components/servicePackItem/index";
 export default {
-    components:{
+    components: {
         servicePackItem
     },
-   data() {
-       return {
-           list
-       }
-   },
-   methods:{
-       handleDetail(id) {
-          this.$router.push({
-              name:'servicePackDetail',
-              params:{
-                  id
-              }
-          })
-       }
-   }
-}
+    data() {
+        return {
+            list
+        };
+    },
+    methods: {
+        handleDetail(id) {
+            this.$router.push({
+                name: "servicePackDetail",
+                params: {
+                    id
+                }
+            });
+        }
+    }
+};
 </script>
 
 <style lang="less" scoped>
-
 </style>

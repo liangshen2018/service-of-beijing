@@ -28,14 +28,15 @@ export default {
         };
     },
     methods: {
-        //   提交
+        //   登陆
         codeChange() {
             this.$router.back(-1);
         },
+        // 获取验证码定时
         handleCode() {
             if (this.isEnter) {
                 const TIME_COUNT = 60;
-                this.btnTxt = TIME_COUNT + "s后获取验证码";
+                this.btnTxt = TIME_COUNT + "s后重新获取";
                 this.codeVisib = true;
                 if (!this.timer) {
                     this.count = TIME_COUNT;
@@ -43,7 +44,7 @@ export default {
                     this.timer = setInterval(() => {
                         if (this.count > 0 && this.count <= TIME_COUNT) {
                             this.count--;
-                            this.btnTxt = this.count + "s后获取验证码";
+                            this.btnTxt = this.count + "s后重新获取";
                         } else {
                             this.btnTxt = "获取验证码";
                             this.show = true;

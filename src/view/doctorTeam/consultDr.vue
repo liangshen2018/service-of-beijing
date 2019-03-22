@@ -37,7 +37,7 @@ export default {
         font-size: 0.3rem;
         padding: 0 0.3rem;
         color: #030303;
-        border-bottom: 1px solid #F7F7F7;
+        border-bottom: 1px solid #f7f7f7;
     }
     .btn {
         position: absolute;

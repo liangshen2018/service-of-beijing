@@ -22,8 +22,68 @@ import PackList from "@/common/servicePack";
 export default {
     data() {
         return {
-            packageInfo: {}
+            packageInfo: {},
+            payOption:{
+                appId:'',
+                timeStamp:'',
+                nonceStr:'',
+                package:'',
+                signType:'',
+                paySign:''
+            }
         };
+    },
+    methods: {
+        // 准备好微信sdk部分
+        jsSdk() {
+            // 判断微信的WeixinJSBridge
+            if (typeof WeixinJSBridge == "undefined") {
+                if (document.addEventListener) {
+                    document.addEventListener(
+                        "WeixinJSBridgeReady",
+                        this.onBridgeReady,
+                        false
+                    );
+                } else if (document.attachEvent) {
+                    document.attachEvent(
+                        "WeixinJSBridgeReady",
+                        this.onBridgeReady
+                    );
+                    document.attachEvent(
+                        "onWeixinJSBridgeReady",
+                        this.onBridgeReady
+                    );
+                }
+            } else {
+                this.onBridgeReady();
+            }
+        },
+        // 支付sdk准备完成
+        onBridgeReady() {
+            // 触发微信支付
+            WeixinJSBridge.invoke(
+                "getBrandWCPayRequest",
+                {
+                    appId: this.payOption.appId, //公众号名称，由商户传入
+                    timeStamp: this.payOption.timeStamp, //时间戳，自1970年以来的秒数
+                    nonceStr: this.payOption.nonceStr, //随机串
+                    package: this.payOption.package, //prepay_id用等式的格式
+                    signType: this.payOption.signType, //微信签名方式：
+                    paySign: this.payOption.paySign //微信签名
+                },
+                function(res) {
+                    if (res.err_msg == "get_brand_wcpay_request:ok") {
+                        // 支付成功 返回成功页
+                        let tempUrl = "//paysucc";
+                        location.href = tempUr;
+                    } else {
+                        //  取消支付或者其他情况
+                        let tempUrl = "//topay";
+                        location.href = tempUrl;
+                    }
+                }
+            );
+        }
     },
     created() {
         const id = this.$route.params.id;

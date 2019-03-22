@@ -38,7 +38,7 @@ export default {
 
 <style lang="less" scoped>
 .team_self {
-    padding: 0 .5rem;
+    padding: .5rem;
     .team_item {
         height: 4rem;
         padding: 0 0.2rem;

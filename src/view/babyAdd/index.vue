@@ -83,7 +83,6 @@ export default {
                     text-align: right;
                 }
                 label {
-                    margin-right: 0.1rem;
                     position: relative;
                     padding: 0 0.3rem;
                     font-size: 0.28rem;

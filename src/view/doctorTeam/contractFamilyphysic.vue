@@ -25,12 +25,7 @@
             </div>
         </div>
         <div class="btn" @click="handleContract">签约家庭医生</div>
-        <mt-datetime-picker
-            ref="picker"
-            type="datetime"
-            :startDate="new Date()"
-            @confirm="handleConfirm"
-            v-model="pickerValue">
+        <mt-datetime-picker ref="picker" type="datetime" :startDate="new Date()" @confirm="handleConfirm" v-model="pickerValue">
         </mt-datetime-picker>
     </div>
 </template>
@@ -44,23 +39,23 @@ export default {
             form: {
                 time: ""
             },
-            pickerValue:''
+            pickerValue: ""
         };
     },
     methods: {
         openPicker() {
-          this.$refs.picker.open();
-       },
-       handleConfirm(val) {
-           const time = moment(val).format('YYYY-MM-DD HH:mm')
-           this.form.time = time
-       },
-       handleContract() {
-           if(!this.form.time) {
-               this.$message('请选择预约时间')
-               return
-           }
-       }
+            this.$refs.picker.open();
+        },
+        handleConfirm(val) {
+            const time = moment(val).format("YYYY-MM-DD HH:mm");
+            this.form.time = time;
+        },
+        handleContract() {
+            if (!this.form.time) {
+                this.$message("请选择预约时间");
+                return;
+            }
+        }
     }
 };
 </script>
@@ -110,7 +105,7 @@ export default {
             height: 0.8rem;
             line-height: 0.8rem;
             font-size: 0.24rem;
-            border-bottom: 1px solid #F2F2F2;
+            border-bottom: 1px solid #f2f2f2;
             .label {
                 float: left;
             }

@@ -3,11 +3,11 @@
         <service-pack-item :list="currentList" @handleDetail="handleDetail"></service-pack-item>
         <div class="privilege">
             <h3>你的特权</h3>
-            <div class="privilege_info" v-for="(item,index) in privilegeData" :key="index">
+            <div class="privilege_info" @click="item.func?item.func():{}" v-for="(item,index) in privilegeData" :key="index">
                 <div class="item clearfix">
                     <div class="title">{{item.title}}</div>
                     <span class="fl tip">{{item.tip}}</span>
-                    <span class="fr cancel" @click="item.func?item.func():{}"> {{item.cancel}}</span>
+                    <span class="fr cancel"> {{item.cancel}}</span>
                 </div>
             </div>
         </div>
@@ -26,19 +26,19 @@ export default {
             currentList: [],
             privilegeData: [
                 {
-                    title: "专属家庭医生",
-                    tip: "7*24小时守护宝贝的健康",
-                    cancel: "未签约",
-                    func: this.handleCancel
+                    title: "健康自评",
+                    tip: "填写你的基本信息",
+                    cancel: "未自评",
+                    func: this.handleAssessment
                 },
                 {
-                    title: "专属健康档案",
+                    title: "健康管理",
                     tip: "私人定制您的健康档案",
                     cancel: "未建档",
-                    func: this.handleCancel
+                    func: this.handleBabyDetail
                 },
                 {
-                    title: "7*24小时电话咨询",
+                    title: "健康咨询",
                     tip: "快速接通医生电话，沟通及时",
                     cancel: "咨询",
                     func: this.handleConsultDr
@@ -53,10 +53,20 @@ export default {
             });
         },
         handleDetail() {},
+        handleBabyDetail() {
+            this.$router.push({
+                name: "babyDetail"
+            });
+        },
         handleConsultDr() {
             this.$router.push({
-                name:'consultDr'
-            })
+                name: "consultDr"
+            });
+        },
+        handleAssessment() {
+            this.$router.push({
+                name: "assessment"
+            });
         }
     },
     created() {
@@ -92,12 +102,12 @@ export default {
             .cancel {
                 font-size: 0.28rem;
                 color: #fff;
-                height: .5rem;
+                height: 0.5rem;
                 width: 1.2rem;
                 display: inline-block;
                 line-height: 0.5rem;
                 text-align: center;
-                font-size: .24rem;
+                font-size: 0.24rem;
                 background: linear-gradient(
                     90deg,
                     rgba(255, 170, 151, 1) 0%,

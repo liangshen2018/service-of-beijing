@@ -14,7 +14,7 @@ const router = new Router({
       component: () => import('@/view/login/index')
     },
     {
-      path: '/',
+      path: '/servicePack/:openid',
       name: 'servicePack',
       meta: {
         title: '服务包列表'
@@ -39,12 +39,28 @@ const router = new Router({
       component: () => import('@/view/babyAdd/index')
     },
     {
-      path: '/user',
+      path: '/baby/detail',
+      name: 'babyDetail',
+      meta: {
+        title: '宝贝详情'
+      },
+      component: () => import('@/view/babyAdd/detail')
+    },
+    {
+      path: '/user/:openid',
       name: 'user',
       meta: {
         title: '个人中心'
       },
       component: () => import('@/view/user/index')
+    },
+    {
+      path: '/userEdit',
+      name: 'userEdit',
+      meta: {
+        title: '个人中心'
+      },
+      component: () => import('@/view/user/userEdit')
     },
     {
       path: '/myServicePack',
@@ -93,14 +109,24 @@ const router = new Router({
         title: '订单支付'
       },
       component: () => import('@/view/payment/index')
+    },
+    {
+      path: '/success',
+      name: 'success',
+      meta: {
+        title: '支付成功'
+      },
+      component: () => import('@/view/payment/success')
+    },
+    {
+      path: '/assessment',
+      name: 'assessment',
+      meta: {
+        title: '填写评估表'
+      },
+      component: () => import('@/view/assessment/index')
     }
   ]
 })
 
-router.beforeEach((to, from, next) => {
-  if (to.meta.title) {
-    document.title = to.meta.title
-  }
-  next()
-})
 export default router

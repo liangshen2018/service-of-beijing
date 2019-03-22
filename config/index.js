@@ -6,18 +6,17 @@ const path = require('path')
 
 module.exports = {
   dev: {
-
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
-        '/api': {
-            target: 'http://',
-            changeOrigin: true,
-            pathRewrite: {
-                '^/api': ''
-            }
+      '/api': {
+        target: 'http://192.168.200.233',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/api': ''
         }
+      }
     },
 
     // Various Dev Server settings
@@ -27,7 +26,6 @@ module.exports = {
     errorOverlay: true,
     notifyOnErrors: true,
     poll: false, // https://webpack.js.org/configuration/dev-server/#devserver-watchoptions-
-
 
     /**
      * Source Maps
@@ -51,7 +49,7 @@ module.exports = {
     // Paths
     assetsRoot: path.resolve(__dirname, '../dist'),
     assetsSubDirectory: 'static',
-    assetsPublicPath: '/',
+    assetsPublicPath: '/health/',
 
     /**
      * Source Maps

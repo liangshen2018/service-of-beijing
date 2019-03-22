@@ -17,7 +17,7 @@
             <h3>宝贝档案</h3>
             <div class="swiper">
                 <mt-swipe :auto="4000">
-                    <mt-swipe-item v-for="(item,index) in recordList" :key="index">
+                    <mt-swipe-item @click.native="handleBabyDatail(item)" v-for="(item,index) in recordList" :key="index">
                         <div class="content">
                             <div class="name">{{item.name}}</div>
                         </div>
@@ -46,8 +46,16 @@ export default {
         return {
             recordList: [{ name: "张三" }],
             meunList: [
-                { content: "家庭医生", img: "assets/images/icon_doctor.png", func: this.handleConsultDr },
-                { content: "帮助反馈", img: "assets/images/icon_help.png",func: this.handleHelp }
+                {
+                    content: "家庭医生",
+                    img: "assets/images/icon_doctor.png",
+                    func: this.handleConsultDr
+                },
+                {
+                    content: "帮助反馈",
+                    img: "assets/images/icon_help.png",
+                    func: this.handleHelp
+                }
             ]
         };
     },
@@ -57,7 +65,18 @@ export default {
                 name: "myServicePack"
             });
         },
-        handleEdit() {},
+        handleEdit() {
+            this.$router.push({
+                name: "userEdit"
+            });
+        },
+        handleBabyDatail(item) {
+            console.log(item);
+
+            this.$router.push({
+                name: "babyDetail"
+            });
+        },
         handleAddBaby() {
             this.$router.push({
                 name: "babyAdd"
@@ -68,9 +87,7 @@ export default {
                 name: "consultDr"
             });
         },
-        handleHelp() {
-
-        }
+        handleHelp() {}
     }
 };
 </script>
