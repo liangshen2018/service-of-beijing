@@ -5,6 +5,7 @@
                 <h3>{{item.title}}</h3>
                 <p class="tip">{{item.tip}}</p>
                 <p class="price">¥{{item.price}}</p>
+                <p  class="name" v-if="item.name">{{item.name}}</p>
             </li>
         </ul>
     </div>
@@ -35,15 +36,20 @@ export default {
             color: #fff;
             padding: 0.5rem 1.8rem 0.3rem 0.3rem;
             margin-bottom: 0.4rem;
-            h3,
-            .price {
+            font-size: 0.4rem;
+            h3 {
                 font-size: 0.4rem;
             }
             .tip {
+                padding: .1rem 0;
                 font-size: 0.3rem;
             }
             .price {
                 margin-top: 0.3rem;
+            }
+            .name {
+                font-size: .45rem;
+                padding: .3rem 0 ;
             }
         }
     }

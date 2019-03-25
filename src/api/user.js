@@ -21,11 +21,11 @@ export function checkUser (openid,appid) {
 
 // 获取健康自评题
 export function getAssessmentList (id, sex) {
-  return fetch(`/upms/wx/health/list/${id}/${sex}`)
+    return fetch(`/upms/wx/package/health/list/${id}/${sex}`)
 }
 // 提交健康自评题
 export function submitAssessment(data) {
-    return post(`/upms/wx/health`, data)
+    return post(`/upms/wx/package/health`, data)
 }
 // 获取用户信息
 export function getUserInfo(openid) {

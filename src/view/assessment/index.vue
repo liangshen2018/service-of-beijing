@@ -3,7 +3,7 @@
         <div class="form" v-for="(row,rowIndex) in formData" :key="rowIndex">
             <div class="caption" v-if="row.Module">{{row.Module}}</div>
             <div class="question" v-if="row.ModuleHint">{{row.ModuleHint}}</div>
-            <div class="question" v-if="isNaN(row.Code)" style="font-weight:600">{{row.Title}}</div>
+            <div class="question" v-if="row.Items[0].Type !=='text'" style="font-weight:600">{{row.Title}}</div>
             <div class="form_item">
                 <div v-for="(child,childIndex) in row.Items" :key="childIndex">
                     <div class="input" v-if="child.Type === 'text'">
@@ -14,7 +14,7 @@
                     </div>
                     <div class="checkbox" v-if="child.Type === 'checkbox'">
                         <input type="checkbox" :id="row.Code+childIndex" :value="child.Text" @change="checkboxChange($event,child.Clear,row.Code,row.Items)" v-model="form[row.Code]">
-                        <label :for="row.Code+childIndex">{{child.Text}}</label>
+                        <label :for="row.Code+childIndex"><span>{{child.Text}}  </span><i></i></label>
                     </div>
                     <div class="checkbox" v-if="child.Type === 'radio'">
                         <input type="radio" :id="row.Code+childIndex" :value="child.Text" @change="radioChange($event)" v-model="form[row.Code]">
@@ -108,10 +108,10 @@ export default {
         async handleSubmit() {
             const items = [];
             this.formData.forEach(row => {
-                const isHave = row.Items.some(item => {
-                    return item.Code === "26_2";
-                });
                 Object.keys(this.form).forEach(key => {
+                    const isHave = row.Items.some(item => {
+                        return item.Code === key;
+                    });
                     if (row.Code === key || isHave) {
                         if (Array.isArray(this.form[key])) {
                             this.form[key].forEach(child => {
@@ -136,7 +136,6 @@ export default {
                                     items.push(formItem);
                                 }
                             });
-                            console.log(111);
                         } else {
                             if (row.Items[0].Type === "radio") {
                                 const formItem = {};
@@ -149,6 +148,8 @@ export default {
                                     items.push(formItem);
                                 }
                             } else if (row.Items[0].Type === "text") {
+                                console.log(11);
+
                                 if (this.form[key]) {
                                     const formItem = {};
                                     formItem.answerCode = key;
@@ -169,7 +170,7 @@ export default {
                 endDate: "2020-01-01", //会员有效期结束时间
                 items
             };
-            const res = await submitAssessment(data);
+            // const res = await submitAssessment(data);
         }
     },
     created() {
@@ -224,6 +225,7 @@ export default {
                 font-size: 0.28rem;
                 display: inline-block;
                 padding-left: 0.5rem;
+                width: 100%;
             }
             input[type="radio"],
             input[type="checkbox"] {
@@ -241,26 +243,39 @@ export default {
                 border-radius: 50%;
                 padding: 0.04rem;
             }
-            input[type="checkbox"] + label:before {
+            input[type="checkbox"] + label > i {
                 content: "";
                 font-size: 0;
-                width: 0.2rem;
-                height: 0.2rem;
+                width: .3rem;
+                height: .3rem;
                 border: 1px solid #cccc;
                 position: absolute;
                 left: 0;
                 top: 0.1rem;
-                padding: 0.04rem;
             }
             input[type="radio"]:checked + label:before {
                 background-color: #ff7b72;
                 background-clip: content-box;
                 border-color: #ff7b72;
             }
-            input[type="checkbox"]:checked + label:before {
-                background-color: #ff7b72;
-                background-clip: content-box;
+            input[type="checkbox"]:checked + label > i {
                 border-color: #ff7b72;
+                background-color: #ff7b72;
+            }
+            input[type="checkbox"] + label > i::after {
+                content: "";
+                transform: rotate(45deg);
+                font-size: 0;
+                width: .06rem;
+                height:0.12rem;
+                border: 1px solid #cccc;
+                position: absolute;
+                left: 0.1rem;
+                top: 0.03rem;
+                content: "";
+                border: solid 2px #fff;
+                border-left: none;
+                border-top: none;
             }
         }
         .show_more {

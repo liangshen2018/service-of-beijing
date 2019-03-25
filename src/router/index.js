@@ -55,6 +55,14 @@ const router = new Router({
       component: () => import('@/view/babyAdd/detail')
     },
     {
+      path: '/baby/update/:id',
+      name: 'babyUpdate',
+      meta: {
+        title: '修改家庭成员'
+      },
+      component: () => import('@/view/babyAdd/update')
+    },
+    {
       path: '/user/:openid/:appid',
       name: 'user',
       meta: {

@@ -49,7 +49,7 @@
 
 <script>
 import moment from "moment";
-import { userFamilyEdit } from "@/api/user";
+import { userFamilyEdit, getFamilyList } from "@/api/user";
 import { getRelation } from "@/api/calalog";
 export default {
     data() {
@@ -60,7 +60,7 @@ export default {
                 birthday: "",
                 idCard: "",
                 relationName: "",
-                relationCode:''
+                relationCode: ""
             },
             pickerValue: "",
             popupVisible: false,
@@ -72,7 +72,36 @@ export default {
             return this.$store.getters.openid;
         }
     },
+    watch: {
+        $route() {
+            this.routerChange();
+        }
+    },
     methods: {
+        async routerChange() {
+            if (this.$route.name === "babyUpdate") {
+                const id = this.$route.params.id;
+                this.$loading.open()
+                const res = await getFamilyList(this.openid);
+                this.$loading.close()
+                if (res.STATUS === "1") {
+                    const d = res.ITEMS;
+                    if (d && d.length > 0) {
+                        const current = d.find(item => item.id == id);
+                        if (current) {
+                            Object.keys(this.form).forEach(key => {
+                                if (key === "birthday") {
+                                    this.form[key] = moment(current[key]).format('YYYY-MM-DD')
+                                } else {
+                                    this.form[key] = current[key];
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+        },
+        // 选择出生日期
         openPicker() {
             this.$refs.picker.open();
         },
@@ -89,7 +118,7 @@ export default {
                     d.forEach(item => {
                         relationList.push({
                             value: item.code,
-                            label: item.name,
+                            label: item.name
                         });
                     });
                     this.relationList = relationList;
@@ -97,9 +126,10 @@ export default {
             }
         },
         relationCodeChange(val) {
-            const name = this.relationList.find(item => item.value === val).label
-            this.form.relationName = name
-            this.popupVisible = false
+            const name = this.relationList.find(item => item.value === val)
+                .label;
+            this.form.relationName = name;
+            this.popupVisible = false;
         },
         // 提交
         async handleSubmit() {
@@ -133,12 +163,11 @@ export default {
                     prop: "relationCode",
                     mes: "请选择关系"
                 }
-
             ];
             const flag = Object.keys(data).every(key => {
                 const current = valit.find(item => item.prop === key);
-                if(!current) {
-                    return
+                if (!current) {
+                    return;
                 }
                 if (!data[key]) {
                     this.$message(current.mes);
@@ -155,18 +184,23 @@ export default {
             if (!flag) {
                 return;
             }
+            // 修改加上Id
+            if (this.$route.name === "babyUpdate") {
+               data.id = this.$route.params.id;
+            }
             data.birthday = moment(data.birthday).format("YYYY-MM-DD HH:mm:ss");
-            this.$loading.open()
+            this.$loading.open();
             const res = await userFamilyEdit(data);
-            this.$loading.close()
-            if(res.STATUS === '1') {
-                this.$message('添加成功')
-                this.$router.push(this.$route.query.redirect)
+            this.$loading.close();
+            if (res.STATUS === "1") {
+                this.$message("操作成功");
+                this.$router.push(this.$route.query.redirect);
             }
         }
     },
     created() {
         this.getRelation();
+        this.routerChange();
     }
 };
 </script>
@@ -175,7 +209,7 @@ export default {
 .page {
     font-size: 0.3rem;
     .btn {
-        position: absolute;
+        position: fixed;
         bottom: 0;
     }
     .form {

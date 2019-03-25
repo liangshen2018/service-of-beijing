@@ -1,8 +1,9 @@
 <template>
     <div class="page">
-        <div class="page_header">
+        <div class="page_header" @click="handleEdit">
             <div class="name">张三 <span class="sex">(男)</span></div>
             <div class="age">1个月</div>
+            <i class="iconfont icon-arrow-right-copy-copy-copy"></i>
         </div>
         <div class="row">
             <div class="fl label">家庭医生</div>
@@ -42,6 +43,19 @@ export default {
                 { label: "先天性疾病" }
             ]
         };
+    },
+    methods:{
+        handleEdit() {
+            this.$router.push({
+                name:'babyUpdate',
+                params:{
+                    id:this.$route.params.id
+                },
+                query: {
+                    redirect: this.$route.path
+                }
+            })
+        }
     }
 };
 </script>
@@ -55,6 +69,7 @@ export default {
         background: url("~@/assets/images/user_h.png") no-repeat;
         background-size: cover;
         color: #fff;
+        position: relative;
         .name {
             font-size: 0.36rem;
             font-weight: 500;
@@ -65,6 +80,14 @@ export default {
         .age {
             margin-top: 0.2rem;
             font-size: 0.3rem;
+        }
+        .icon-arrow-right-copy-copy-copy {
+            position: absolute;
+            width: .4rem;
+            height: 0.4rem;
+            font-size: .36rem;
+            right: .4rem;
+            top:1rem;
         }
     }
     .row {

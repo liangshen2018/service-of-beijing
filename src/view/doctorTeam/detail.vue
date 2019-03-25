@@ -2,10 +2,10 @@
     <div class="page">
         <div class="page_header">
         </div>
-        <div class="img"><img src="@/assets/images/1.png" alt=""></div>
+        <div class="img"><img :src="require('@/'+data.headImg)"  alt=""></div>
         <div class="name">{{data.teamName}}</div>
         <div class="member clearfix" v-for="(item,index) in data.memberData" :key="index">
-            <div class="left"><img src="" alt=""></div>
+            <div class="left"><img :src="require('@/'+item.img)"   alt=""></div>
             <div class="right">
                 <div class="member_name">{{item.name}}</div>
                 <p class="content" v-for="(child,idx) in item.content" :key="idx">{{child}}</p>
@@ -45,6 +45,9 @@ export default {
     .img {
         margin-top: -1.5rem;
         padding: 0 0.5rem;
+        img {
+            border-radius: 4px;
+        }
     }
     .name {
         font-size: 0.36rem;

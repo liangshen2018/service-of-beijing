@@ -29,7 +29,7 @@ export default {
                     title: "专属家庭医生签署",
                     tip: "7*24小时守护宝贝的健康",
                     cancel: "未签约",
-                    func: this.handleAssessment
+                    func: this.handleCancel
                 },
                 {
                     title: "健康自评",
@@ -120,6 +120,9 @@ export default {
                     rgba(255, 134, 160, 1) 100%
                 );
                 border-radius: 0.4rem;
+                &.active {
+                    background: #DBDBDB;
+                }
             }
         }
     }

@@ -57,7 +57,7 @@ export default {
                         this.getFamilyList();
                         this.popupVisible = true;
                     } else {
-                        next(`/login?redirect=${this.$route.path}`);
+                        this.$router.push(`/login?redirect=${this.$route.path}`);
                     }
                 });
             } else {
@@ -84,7 +84,7 @@ export default {
                         })`;
                         familyList.push({
                             label,
-                            value: item.id
+                            value: `${item.id}`
                         });
                     });
                     this.familyList = familyList;

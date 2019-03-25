@@ -12,7 +12,7 @@
         </div>
         <div class="bot">
             <div class="count"><span class="count_left">合计支付:</span>{{packageInfo.price}}元</div>
-            <div class="btn">确认支付</div>
+            <div class="btn" @click="handleConfirm">确认支付</div>
         </div>
     </div>
 </template>
@@ -83,6 +83,10 @@ export default {
                     }
                 }
             );
+        },
+        // 确认支付
+        handleConfirm() {
+           this.jsSdk()
         }
     },
     created() {
@@ -122,15 +126,17 @@ export default {
             width: 0.36rem;
             height: 0.36rem;
             position: absolute;
-            background: url("~@/assets/images/weixin.png") no-repeat;
+            background: url("~@/assets/images/weixin.png") center no-repeat;
+            background-size: .36rem .36rem;
             left: 0.3rem;
             top: 0.3rem;
         }
         .mintui-field-success {
             position: absolute;
             right: 0.5rem;
-            top: 0.05rem;
+            top: 0;
             color: #65d456;
+            font-size: .4rem;
         }
     }
     .bot {
