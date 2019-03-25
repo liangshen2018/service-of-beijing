@@ -1,12 +1,12 @@
-import Cookie from 'js-cookie'
+// import Cookie from 'js-cookie'
 
 const TOKEN_KEY = 'token'
 export function getToken () {
-  return Cookie.get(TOKEN_KEY)
+  return sessionStorage.getItem(TOKEN_KEY)
 }
 export function setToken (token) {
-  return Cookie.get(TOKEN_KEY, token)
+    return sessionStorage.setItem(TOKEN_KEY, token)
 }
 export function removeToken () {
-  return Cookie.get(TOKEN_KEY)
+    return sessionStorage.removeItem(TOKEN_KEY)
 }

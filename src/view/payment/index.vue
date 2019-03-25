@@ -86,7 +86,7 @@ export default {
         }
     },
     created() {
-        const id = this.$route.params.id;
+        const id = this.$route.params.packageId;
         const packageInfo = PackList.find(item => item.id == id);
         packageInfo.price = packageInfo.price.split("/")[0];
         this.packageInfo = packageInfo;

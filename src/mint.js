@@ -10,7 +10,8 @@ import {
   TabContainerItem,
   TabContainer,
   Cell,
-  Checklist
+  Checklist,
+  Indicator
 } from 'mint-ui'
 Vue.component(Field.name, Field)
 Vue.component(Button.name, Button)
@@ -23,3 +24,4 @@ Vue.component(TabContainerItem.name, TabContainerItem)
 Vue.component(Cell.name, Cell)
 Vue.component(Checklist.name, Checklist)
 Vue.prototype.$message = Toast
+Vue.prototype.$loading = Indicator

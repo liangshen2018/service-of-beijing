@@ -26,6 +26,12 @@ export default {
             currentList: [],
             privilegeData: [
                 {
+                    title: "专属家庭医生签署",
+                    tip: "7*24小时守护宝贝的健康",
+                    cancel: "未签约",
+                    func: this.handleAssessment
+                },
+                {
                     title: "健康自评",
                     tip: "填写你的基本信息",
                     cancel: "未自评",

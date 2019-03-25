@@ -6,6 +6,14 @@ Vue.use(Router)
 const router = new Router({
   routes: [
     {
+      path: '/home/:openid/:appid',
+      name: 'home',
+      meta: {
+        title: '首页'
+      },
+      component: () => import('@/view/home/index')
+    },
+    {
       path: '/login',
       name: 'login',
       meta: {
@@ -14,7 +22,7 @@ const router = new Router({
       component: () => import('@/view/login/index')
     },
     {
-      path: '/servicePack/:openid',
+      path: '/servicePack/:openid/:appid',
       name: 'servicePack',
       meta: {
         title: '服务包列表'
@@ -39,7 +47,7 @@ const router = new Router({
       component: () => import('@/view/babyAdd/index')
     },
     {
-      path: '/baby/detail',
+      path: '/baby/detail/:id',
       name: 'babyDetail',
       meta: {
         title: '宝贝详情'
@@ -47,7 +55,7 @@ const router = new Router({
       component: () => import('@/view/babyAdd/detail')
     },
     {
-      path: '/user/:openid',
+      path: '/user/:openid/:appid',
       name: 'user',
       meta: {
         title: '个人中心'
@@ -58,9 +66,17 @@ const router = new Router({
       path: '/userEdit',
       name: 'userEdit',
       meta: {
-        title: '个人中心'
+        title: '修改资料'
       },
       component: () => import('@/view/user/userEdit')
+    },
+    {
+      path: '/phoneEdit',
+      name: 'phoneEdit',
+      meta: {
+        title: '修改手机'
+      },
+      component: () => import('@/view/user/phoneEdit')
     },
     {
       path: '/myServicePack',
@@ -87,12 +103,20 @@ const router = new Router({
       component: () => import('@/view/doctorTeam/index')
     },
     {
-      path: '/contractFamilyphysic/:id',
-      name: 'contractFamilyphysic',
+      path: '/contractSuccess',
+      name: 'contractSuccess',
+      meta: {
+        title: '签约成功'
+      },
+      component: () => import('@/view/doctorTeam/contractSuccess')
+    },
+    {
+      path: '/teamDetail/:id',
+      name: 'teamDetail',
       meta: {
         title: '签约家庭医生'
       },
-      component: () => import('@/view/doctorTeam/contractFamilyphysic')
+      component: () => import('@/view/doctorTeam/detail')
     },
     {
       path: '/consultDr',
@@ -103,7 +127,7 @@ const router = new Router({
       component: () => import('@/view/doctorTeam/consultDr')
     },
     {
-      path: '/payment/:id',
+      path: '/payment/:packageId/:babyId',
       name: 'payment',
       meta: {
         title: '订单支付'

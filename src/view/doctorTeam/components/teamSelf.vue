@@ -6,7 +6,7 @@
                 <div class="right">
                     <div><span class="name">李医生</span><span>主任医师</span></div>
                     <p>高新区南新卫生服务中心</p>
-                    <div><span class="button">电话</span></div>
+                    <!-- <div><span class="button">电话</span></div> -->
                 </div>
             </div>
             <div class="introduce">
@@ -14,7 +14,6 @@
                 <ul>
                     <li>评价: <span>5.0分</span></li>
                     <li>服务: <span>5000人</span></li>
-                    <li>距离: <span>200km</span></li>
                 </ul>
             </div>
         </div>
@@ -78,9 +77,9 @@ export default {
                     display: inline-block;
                     color: #fff;
                     font-size: 0.2rem;
-                    padding: 0.1rem 0.3rem;
+                    padding: 0.05rem 0.3rem;
                     border-radius: 0.6rem;
-                    background-color: #8e95f9;
+                    background-color: #FF9A9B;
                 }
             }
         }

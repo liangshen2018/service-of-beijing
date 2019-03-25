@@ -1,15 +1,16 @@
 import axios from 'axios'
 import { Toast } from 'mint-ui'
 
-function errMsg(msg) {
-    Toast({
-    message: msg,
+function errMsg (msg) {
+  Toast({
+    message: msg
   })
 }
 
-axios.defaults.baseURL = process.env.BASE_API
+axios.defaults.baseURL =
+  process.env.ENV_CONFIG === 'dev' ? '/api' : process.env.BASE_API
 
-axios.defaults.timeout = 15000
+axios.defaults.timeout = 30000
 // 设置默认请求头
 axios.defaults.headers = {
   'X-Requested-With': 'XMLHttpRequest'
@@ -18,6 +19,9 @@ axios.defaults.headers = {
 // http request 拦截器
 axios.interceptors.request.use(
   config => {
+    if (sessionStorage.getItem('token')) {
+      config.headers['Authorization'] = sessionStorage.getItem('token') // 让每个请求携带自定义token 请根据实际情况自行修改
+    }
     return config
   },
   error => {
@@ -35,7 +39,7 @@ axios.interceptors.response.use(
         response.status === 400)
     ) {
       const data = response.data
-      if (data.STATUS === '1') {
+      if (data.STATUS === '1' || data.access_token) {
         return data
       }
       errMsg(data.MESSAGE)
@@ -122,7 +126,7 @@ axios.interceptors.response.use(
  * @returns {Promise}
  */
 
-export function fetch(url, params = {}) {
+export function fetch (url, params = {}) {
   return new Promise((resolve, reject) => {
     axios({
       url,
@@ -144,7 +148,7 @@ export function fetch(url, params = {}) {
  * @returns {Promise}
  */
 
-export function post(url, data = {}, responseType) {
+export function post (url, data = {}, responseType) {
   return new Promise((resolve, reject) => {
     axios({
       method: 'post',
@@ -168,7 +172,7 @@ export function post(url, data = {}, responseType) {
  * @returns {Promise}
  */
 
-export function deleteHttp(url, data = {}) {
+export function deleteHttp (url, data = {}) {
   return new Promise((resolve, reject) => {
     axios({
       method: 'delete',
@@ -191,7 +195,7 @@ export function deleteHttp(url, data = {}) {
  * @returns {Promise}
  */
 
-export function patch(url, data = {}) {
+export function patch (url, data = {}) {
   return new Promise((resolve, reject) => {
     axios({
       method: 'patch',
@@ -214,7 +218,7 @@ export function patch(url, data = {}) {
  * @returns {Promise}
  */
 
-export function put(url, data = {}) {
+export function put (url, data = {}) {
   return new Promise((resolve, reject) => {
     axios({
       method: 'put',

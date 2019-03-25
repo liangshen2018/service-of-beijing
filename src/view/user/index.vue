@@ -2,8 +2,8 @@
     <div class="page">
         <div class="user_header">
             <div class="user_info">
-                <div class="img"><img src="" alt=""></div>
-                <span>凉凉</span>
+                <div class="img"><img :src="recordList.headImg" alt=""></div>
+                <span>{{recordList.name}}</span>
                 <span class="button" @click="handleEdit"></span>
             </div>
         </div>
@@ -14,52 +14,89 @@
             </div>
         </div>
         <div class="meun">
-            <h3>宝贝档案</h3>
+            <h3>家庭成员</h3>
             <div class="swiper">
                 <mt-swipe :auto="4000">
-                    <mt-swipe-item @click.native="handleBabyDatail(item)" v-for="(item,index) in recordList" :key="index">
+                    <mt-swipe-item @click.native="handleBabyDatail(item)" v-for="(item,index) in familyList" :key="index">
                         <div class="content">
                             <div class="name">{{item.name}}</div>
                         </div>
                     </mt-swipe-item>
                     <mt-swipe-item>
                         <div class="content">
-                            <div class="button"><span @click="handleAddBaby">新增宝贝档案</span></div>
+                            <div class="button"><span @click="handleAddBaby">新增家庭成员</span></div>
                         </div>
                     </mt-swipe-item>
                 </mt-swipe>
             </div>
         </div>
-        <div class="meun clearfix">
+        <!-- <div class="meun clearfix">
             <h3>常用工具</h3>
             <div class="meun_item" @click="item.func" v-for="(item,index) in meunList" :key="index">
                 <img class="img" :src="require('@/'+item.img)" alt="">
                 <p>{{item.content}}</p>
             </div>
-        </div>
+        </div> -->
+
     </div>
 </template>
 
 <script>
+import checkUser from "./mixin.js";
+import { getUserInfo, getFamilyList } from "@/api/user";
+import { mapGetters } from "vuex";
 export default {
     data() {
         return {
-            recordList: [{ name: "张三" }],
+            recordList: {},
+            familyList: [],
             meunList: [
                 {
-                    content: "家庭医生",
-                    img: "assets/images/icon_doctor.png",
+                    content: "我的消息",
+                    img: "assets/images/message.png",
                     func: this.handleConsultDr
                 },
                 {
-                    content: "帮助反馈",
+                    content: "帮助中心",
                     img: "assets/images/icon_help.png",
+                    func: this.handleHelp
+                },
+                {
+                    content: "投诉建议",
+                    img: "assets/images/complaint.png",
                     func: this.handleHelp
                 }
             ]
         };
     },
     methods: {
+        // 获取用户信息
+        async getUserInfo() {
+            if (this.userInfo) {
+                const d = this.userInfo;
+                this.recordList = {
+                    name: d.name,
+                    headImg: d.headImg
+                };
+                return;
+            }
+            this.$store.dispatch("setUserInfo", this.openid).then(d => {
+                this.recordList = {
+                    name: d.name,
+                    headImg: d.headImg
+                };
+            });
+        },
+        // 获取家庭成员
+        async getFamilyList() {
+            const res = await getFamilyList(this.openid);
+            if (res.STATUS === "1") {
+                const d = res.ITEMS;
+                if (d && d.length > 0) {
+                    this.familyList = d;
+                }
+            }
+        },
         handleMyPack() {
             this.$router.push({
                 name: "myServicePack"
@@ -71,15 +108,19 @@ export default {
             });
         },
         handleBabyDatail(item) {
-            console.log(item);
-
             this.$router.push({
-                name: "babyDetail"
+                name: "babyDetail",
+                params: {
+                    id: item.id
+                }
             });
         },
         handleAddBaby() {
             this.$router.push({
-                name: "babyAdd"
+                name: "babyAdd",
+                query: {
+                    redirect: this.$route.path
+                }
             });
         },
         handleConsultDr() {
@@ -88,12 +129,21 @@ export default {
             });
         },
         handleHelp() {}
+    },
+    mixins: [checkUser],
+    computed: {
+        ...mapGetters(["openid", "userInfo"])
+    },
+    created() {
+        this.getUserInfo();
+        this.getFamilyList();
     }
 };
 </script>
 
 <style lang="less" scoped>
 .page {
+    padding-bottom: 1rem;
     .user_header {
         padding: 1rem 0.3rem 0 0.3rem;
         background: url("~@/assets/images/user_h.png") no-repeat;
@@ -110,6 +160,7 @@ export default {
                 display: inline-block;
                 vertical-align: middle;
                 border-radius: 50%;
+                overflow: hidden;
                 //  background-color: rgb(157, 255, 0);
             }
             .button {
@@ -122,7 +173,7 @@ export default {
         }
     }
     .meun {
-        margin: 1rem 0;
+        margin: 0.7rem 0;
         padding: 0 0.3rem;
         h3 {
             font-size: 0.36rem;
@@ -143,7 +194,7 @@ export default {
                 margin: 0 auto;
             }
             p {
-                color: rgba(3, 3, 3, 1);
+                color: #7b7b7b;
                 font-size: 0.24rem;
                 text-align: center;
                 margin-top: 0.2rem;
@@ -159,6 +210,7 @@ export default {
                 background: url("~@/assets/images/swipe.png") no-repeat;
                 background-position-y: bottom;
                 background-color: #fff;
+                background-size: 100% 0.5rem;
                 box-shadow: 0px 13px 20px 0px rgba(255, 255, 255, 0.31);
                 border-radius: 4px;
                 border: 1px solid rgba(243, 243, 243, 1);
@@ -190,6 +242,27 @@ export default {
             }
             .mint-swipe-indicator.is-active {
                 background-color: red;
+            }
+        }
+    }
+    .nav {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        height: 1rem;
+        box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.15);
+        background-color: #fff;
+        .nav_item {
+            float: left;
+            text-align: center;
+            width: 33.3%;
+            font-size: 0.24rem;
+            color: #7b7b7b;
+            i {
+                font-size: 0.5rem;
+            }
+            p {
+                padding-top: 0.1rem;
             }
         }
     }

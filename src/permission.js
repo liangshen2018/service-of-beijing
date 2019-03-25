@@ -1,18 +1,24 @@
 import router from './router'
-import { getToken } from '@/utils/auth' // getToken from cookie
-const whiteList = ['/login'] // 不重定向白名单
+import store from './store'
+// 公从号菜单页
+const menuList = ['user', 'home', 'servicePack']
 router.beforeEach((to, from, next) => {
-    if (getToken()) {
-        next()
-    } else {
-        // if (whiteList.indexOf(to.path) !== -1) {
-        //     next()
-        // } else {
-        //     next(`/login) // 否则全部重定向到登录页
-        // }
-        next()
+  if (!sessionStorage.getItem('token')) {
+    store.dispatch('accredit').then(() => {
+      if (menuList.includes(to.name)) {
+        store.commit('SET_OPENID', to.params.openid)
+        store.commit('SET_APPID', to.params.appid)
+      }
+      next()
+    })
+  } else {
+    if (menuList.includes(to.name)) {
+      store.commit('SET_OPENID', to.params.openid)
+      store.commit('SET_APPID', to.params.appid)
     }
-    if (to.meta.title) {
-        document.title = to.meta.title
-    }
+    next()
+  }
+  if (to.meta.title) {
+    document.title = to.meta.title
+  }
 })

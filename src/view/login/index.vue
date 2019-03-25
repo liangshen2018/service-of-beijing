@@ -13,6 +13,7 @@
 </template>
 
 <script>
+import { getCode, userBind } from "@/api/user";
 export default {
     data() {
         return {
@@ -29,11 +30,18 @@ export default {
     },
     methods: {
         //   登陆
-        codeChange() {
-            this.$router.back(-1);
+        async codeChange() {
+            const data = Object.assign({}, this.form);
+            data.openid = this.openid;
+            data.appid = this.appid;
+            const res = await userBind(data);
+            if (res.STATUS === "1") {
+                this.$router.push(this.$route.query.redirect);
+                this.$store.dispatch('setUserInfo',this.openid)
+            }
         },
         // 获取验证码定时
-        handleCode() {
+        async handleCode() {
             if (this.isEnter) {
                 const TIME_COUNT = 60;
                 this.btnTxt = TIME_COUNT + "s后重新获取";
@@ -52,6 +60,7 @@ export default {
                             this.timer = null;
                         }
                     }, 1000);
+                    getCode(this.form.phone);
                 }
             }
         }
@@ -70,6 +79,12 @@ export default {
             } else {
                 return false;
             }
+        },
+        openid() {
+            return this.$store.getters.openid;
+        },
+        appid() {
+            return this.$store.getters.appid;
         }
     }
 };

@@ -11,7 +11,7 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/api': {
-        target: 'http://192.168.200.233',
+        target: 'http://www.shareee.com.cn/his-api/',
         changeOrigin: true,
         pathRewrite: {
           '^/api': ''
@@ -49,7 +49,7 @@ module.exports = {
     // Paths
     assetsRoot: path.resolve(__dirname, '../dist'),
     assetsSubDirectory: 'static',
-    assetsPublicPath: '/health/',
+    assetsPublicPath: './',
 
     /**
      * Source Maps

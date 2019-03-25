@@ -2,22 +2,70 @@
     <div class="page">
         <div class="row" v-for="(item,index) in userData" :key="index">
             <div class="fl label">{{item.label}}</div>
-            <div class="fr value">{{item.value?item.value : ''}} <span class="button"></span></div>
+            <div class="fr value" @click="item.func">{{item.value?item.value : ''}} <span class="button"></span></div>
         </div>
     </div>
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+import { MessageBox } from "mint-ui";
+import { userNameEdit } from "@/api/user";
 export default {
     data() {
-        return {
-            userData: [
-                { label: "昵称", value: "dsadsa" },
-                { label: "已绑定手机", value: "18545678941" },
-                { label: "切换账号", value: "" }
-            ]
-        };
-    }
+        return {};
+    },
+    computed: {
+        ...mapGetters(["openid", "userInfo", "appid"]),
+        userData() {
+            const userData = [
+                {
+                    label: "昵称",
+                    value: this.userInfo.name,
+                    func: this.handleEditName
+                },
+                {
+                    label: "已绑定手机",
+                    value: this.userInfo.phone,
+                    func: this.handleEditPhone
+                }
+            ];
+            return userData;
+        }
+    },
+    methods: {
+        handleEditPhone() {
+            this.$router.push({
+                name: "phoneEdit",
+                query: {
+                    redirect: `/user/${this.openid}/${this.appid}`
+                }
+            });
+        },
+        async handleEditName() {
+            try {
+                const val = await MessageBox.prompt("请输入昵称", {});
+                const data = {
+                    name: val.value,
+                    openid: this.openid
+                };
+                if (!val.value) {
+                    this.$message("昵称不能为空");
+                    return;
+                }
+                this.$loading.open();
+                const res = await userNameEdit(data);
+                if (res.STATUS === "1") {
+                    this.$store
+                        .dispatch("setUserInfo", this.openid)
+                        .then(() => {
+                            this.$loading.close();
+                        });
+                }
+            } catch (e) {}
+        }
+    },
+    created() {}
 };
 </script>
 

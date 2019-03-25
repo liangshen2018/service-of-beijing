@@ -1,12 +1,21 @@
 <template>
   <div id="app">
     <router-view/>
+    <nav-self v-if="pageList.includes($route.name)"></nav-self>
   </div>
 </template>
-
 <script>
+import navSelf  from '@/components/navSelf';
 export default {
-  name: 'App'
+  name: 'App',
+  components:{
+      navSelf
+  },
+  data() {
+      return {
+          pageList:['home','user','servicePack']
+      }
+  }
 }
 </script>
 
@@ -18,5 +27,6 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   margin:0 auto;
   font-size: .36rem;
+
 }
 </style>

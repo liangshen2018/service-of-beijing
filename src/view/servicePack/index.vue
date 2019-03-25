@@ -7,6 +7,7 @@
 <script>
 import list from "@/common/servicePack";
 import servicePackItem from "@/components/servicePackItem/index";
+
 export default {
     components: {
         servicePackItem
@@ -30,4 +31,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.page {
+    padding-bottom: .5rem;
+}
 </style>

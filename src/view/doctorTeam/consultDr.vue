@@ -23,7 +23,7 @@ export default {
     methods: {
         handleCancel() {},
         callPhone() {
-            window.location.href = "tel://" + 12345678901;
+            window.location.href = "tel:" + 10086;
         }
     }
 };

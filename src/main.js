@@ -8,6 +8,7 @@ import router from './router'
 import store from './store'
 import './mint.js'
 import './style/index.less'
+import '@/font/iconfont.css';
 import './common/rem'
 import '@/permission'
 Vue.use(MintUI)
