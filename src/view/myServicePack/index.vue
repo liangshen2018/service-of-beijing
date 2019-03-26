@@ -1,39 +1,62 @@
 <template>
     <div class="page">
-        <service-pack-item :list="list" @handleDetail="handleDetail"></service-pack-item>
+        <card-item :list="list" @handleDetail="handleDetail"></card-item>
+        <div class="empty" v-if="list.length === 0">
+            暂无服务包
+        </div>
     </div>
 </template>
 
 <script>
-import servicePackItem from "@/components/servicePackItem/index";
-import list from "@/common/servicePack";
+import CardItem from "@/components/CardItem/index";
+import packList from "@/common/servicePack";
+import { getOrderList } from "@/api/user";
+import { mapGetters } from "vuex";
+
 export default {
     components: {
-        servicePackItem
+        CardItem
     },
     data() {
-        const currentList = [];
-        const ids = [1, 2]; //服务包Id
-        ids.forEach(id => {
-            const item = list.find(child => child.id == id);
-            currentList.push(item);
-        });
         return {
-            list: currentList
+            packList,
+            list: []
         };
+    },
+    computed: {
+        ...mapGetters(["openid"])
     },
     methods: {
         handleDetail(id) {
+            this.$store.commit("SET_EQUITY_ID", id);
             this.$router.push({
                 name: "packageInterest",
                 params: {
                     id
                 }
             });
+        },
+        async getOrderList() {
+            const res = await getOrderList(this.openid);
+            const list = [];
+            // ids.forEach(id => {
+            //     const item = list.find(child => child.id == id);
+            //     list.push(item);
+            // });
+            // this.list = list
         }
+    },
+    created() {
+        this.getOrderList();
     }
 };
 </script>
 
-<style>
+<style lang="less" scoped>
+ .empty {
+     margin: 4rem 0;
+     text-align: center;
+     color: #ABABAB;
+ }
 </style>
+

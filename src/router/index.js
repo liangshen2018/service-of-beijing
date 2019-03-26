@@ -103,7 +103,7 @@ const router = new Router({
       component: () => import('@/view/myServicePack/packageInterest')
     },
     {
-      path: '/doctorTeam',
+        path: '/doctorTeam/:packageId',
       name: 'doctorTeam',
       meta: {
         title: '签约医生团队'
@@ -135,7 +135,7 @@ const router = new Router({
       component: () => import('@/view/doctorTeam/consultDr')
     },
     {
-      path: '/payment/:packageId/:babyId',
+      path: '/payment/:packageId',
       name: 'payment',
       meta: {
         title: '订单支付'
@@ -143,7 +143,7 @@ const router = new Router({
       component: () => import('@/view/payment/index')
     },
     {
-      path: '/success',
+      path: '/success/:packageId',
       name: 'success',
       meta: {
         title: '支付成功'

@@ -3,7 +3,9 @@
         <div class="page_hearder">
             <div class="address"><span>北京</span><span class="iconfont icon-jiantou"></span></div>
         </div>
-        <div class="banner"></div>
+        <div class="banner">
+            <img src="@/assets/images/home.jpg" alt="">
+        </div>
         <div class="introduce">
             <div class="header">北京颐美佳中医院</div>
             <p class="content">颐美佳专科医生团队覆盖耳鼻咽喉科、眼科、口腔科、皮肤科、中医科，设备器械种类齐全。由解放军总医院、同仁医生集团、第四军医大学等专业团队组成，并有301医院、协和医院等若干三甲医院的知名专家常年坐诊。</p>
@@ -15,16 +17,16 @@
             </ul>
         </div>
         <h3>{{isHavePack? '我的服务包' : '服务包列表'}}</h3>
-        <service-pack-item :list="list" @handleDetail="handleDetail"></service-pack-item>
+        <card-item :list="list" @handleDetail="handleDetail"></card-item>
     </div>
 </template>
 
 <script>
 import list from "@/common/servicePack";
-import servicePackItem from "@/components/servicePackItem/index";
+import CardItem from "@/components/CardItem/index";
 export default {
     components: {
-        servicePackItem
+        CardItem
     },
     data() {
         return {
@@ -78,6 +80,11 @@ export default {
     }
     .banner {
         height: 4rem;
+        padding: 0 .4rem;
+        img {
+            border-radius: 8px;
+            height: 4rem;;
+        }
     }
     .introduce {
         padding: 0.4rem;

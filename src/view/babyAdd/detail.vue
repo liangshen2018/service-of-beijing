@@ -1,13 +1,9 @@
 <template>
     <div class="page">
         <div class="page_header" @click="handleEdit">
-            <div class="name">张三 <span class="sex">(男)</span></div>
-            <div class="age">1个月</div>
+            <div class="name">{{babyInfo.name}}<span class="sex">{{babyInfo.sex}}</span></div>
+            <div class="age">{{babyInfo.age}}</div>
             <i class="iconfont icon-arrow-right-copy-copy-copy"></i>
-        </div>
-        <div class="row">
-            <div class="fl label">家庭医生</div>
-            <div class="fr value">数思都</div>
         </div>
         <div class="row">
             <div class="tab_left fl" :class="{'active': active==='tab1'}" @click="active ='tab1'">专属病历</div>
@@ -28,34 +24,75 @@
 </template>
 
 <script>
+import moment from "moment";
+import { mapGetters } from "vuex";
+import { formatSex, getBabyAge } from "@/utils";
 export default {
     data() {
         return {
             active: "tab2",
             babyData: [
-                { label: "身份证" },
-                { label: "体重" },
-                { label: "出生医院" },
-                { label: "出生情况" },
-                { label: "ABO血型" },
-                { label: "RH血型" },
-                { label: "过敏史" },
-                { label: "先天性疾病" }
-            ]
+                { label: "身份证", prop: "idCard" },
+                { label: "性别", prop: "sex" },
+                { label: "出生日期", prop: "birthday" },
+                { label: "ABO血型", prop: "bloodType" },
+                { label: "RH血型", prop: "bloodTypeRh" },
+                { label: "过敏史", prop: "allergy" },
+                { label: "先天性疾病", prop: "diseases" },
+            ],
+            babyInfo:{
+                name:'',
+                sex:'',
+                age:''
+            }
         };
     },
-    methods:{
+    computed: {
+        ...mapGetters(["familyList"]),
+   },
+    methods: {
+        // 去修改
         handleEdit() {
             this.$router.push({
-                name:'babyUpdate',
-                params:{
-                    id:this.$route.params.id
+                name: "babyUpdate",
+                params: {
+                    id: this.$route.params.id
                 },
                 query: {
                     redirect: this.$route.path
                 }
-            })
+            });
+        },
+        // 获取 成员信息
+        getPageData() {
+            const id = this.$route.params.id;
+            const current = this.familyList.find(item => item.id == id);
+            this.babyInfo = {
+                name: current.name,
+                sex: formatSex(current.sex),
+                age: getBabyAge(current.birthday)
+            }
+            this.babyData.forEach(item => {
+                Object.keys(current).forEach(key => {
+                    if (item.prop === key) {
+                        if (key === "sex") {
+                            item.value = current[key]
+                                ? formatSex(current[key])
+                                : "";
+                        } else if (key === "birthday") {
+                            item.value = current[key]
+                                ? moment(current[key]).format("YYYY-MM-DD")
+                                : "";
+                        } else {
+                            item.value = current[key] ? current[key] : "";
+                        }
+                    }
+                });
+            });
         }
+    },
+    created() {
+        this.getPageData();
     }
 };
 </script>
@@ -83,11 +120,11 @@ export default {
         }
         .icon-arrow-right-copy-copy-copy {
             position: absolute;
-            width: .4rem;
+            width: 0.4rem;
             height: 0.4rem;
-            font-size: .36rem;
-            right: .4rem;
-            top:1rem;
+            font-size: 0.36rem;
+            right: 0.4rem;
+            top: 1rem;
         }
     }
     .row {

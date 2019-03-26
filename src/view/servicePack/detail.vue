@@ -15,8 +15,8 @@
                     <span>选择家庭成员</span>
                     <div class="button" @click="handleBabyAdd">新增</div>
                 </h3>
-                <template v-if="familyList.length > 0">
-                    <mt-radio align="right" v-model="babyId" :options="familyList">
+                <template v-if="formatFamily.length > 0">
+                    <mt-radio align="right" v-model="babyId" :options="formatFamily">
                     </mt-radio>
                 </template>
                 <div v-else class="tip">暂无宝贝</div>
@@ -28,7 +28,7 @@
 </template>
 <script>
 import list from "./tpl/img";
-import { checkUser, getFamilyList } from "@/api/user";
+import { checkUser } from "@/api/user";
 import { mapGetters } from "vuex";
 export default {
     data() {
@@ -38,11 +38,20 @@ export default {
             popupVisible: false,
             babyId: "",
             value: [],
-            familyList: []
         };
     },
     computed: {
-        ...mapGetters(["openid", "bound", "appid"])
+        ...mapGetters(["openid", "bound", "appid",'familyList']),
+        formatFamily() {
+            const data = []
+            this.familyList.forEach(item => {
+                  data.push({
+                      value: `${item.id}`,
+                      label: item.name
+                  })
+            })
+            return data
+        }
     },
     methods: {
         // 点击立即购买
@@ -55,14 +64,14 @@ export default {
                     if (res.ITEMS.bound === 1) {
                         this.$store.commit("SET_BOUND", res.ITEMS.bound);
                         this.getFamilyList();
-                        this.popupVisible = true;
                     } else {
-                        this.$router.push(`/login?redirect=${this.$route.path}`);
+                        this.$router.push(
+                            `/login?redirect=${this.$route.path}`
+                        );
                     }
                 });
             } else {
                 this.getFamilyList();
-                this.popupVisible = true;
             }
         },
         //  获取详情
@@ -73,23 +82,12 @@ export default {
         },
         // 获取家庭成员
         async getFamilyList() {
-            const res = await getFamilyList(this.openid);
-            if (res.STATUS === "1") {
-                const d = res.ITEMS;
-                if (d && d.length > 0) {
-                    const familyList = [];
-                    d.forEach(item => {
-                        const label = `${item.name}(${
-                            item.sex === 1 ? "男" : "女"
-                        })`;
-                        familyList.push({
-                            label,
-                            value: `${item.id}`
-                        });
-                    });
-                    this.familyList = familyList;
-                }
+            if(this.familyList) {
+                this.popupVisible = true;
+                return
             }
+            await this.$store.dispatch('setFamilyList',this.openid)
+            this.popupVisible = true;
         },
         // 新增
         handleBabyAdd() {
@@ -105,15 +103,19 @@ export default {
             if (!this.babyId) {
                 this.$message({
                     message: "请选择家庭成员",
-                    position:'bottom'
+                    position: "bottom"
                 });
                 return;
             }
+            const userIds = this.babyId
             this.$router.push({
                 name: "payment",
                 params: {
                     packageId: this.$route.params.id,
-                    babyId: this.babyId
+
+                },
+                query:{
+                    userIds,
                 }
             });
         }
@@ -127,10 +129,6 @@ export default {
 <style lang="less" scoped>
 .page {
     padding-bottom: 1rem;
-    .btn {
-        position: absolute;
-        bottom: 0;
-    }
     .purchase {
         h2 {
             font-size: 0.4rem;

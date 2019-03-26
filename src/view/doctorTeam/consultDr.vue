@@ -39,10 +39,6 @@ export default {
         color: #030303;
         border-bottom: 1px solid #f7f7f7;
     }
-    .btn {
-        position: absolute;
-        bottom: 0;
-    }
 }
 </style>
 

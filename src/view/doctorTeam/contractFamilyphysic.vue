@@ -122,10 +122,6 @@ export default {
             }
         }
     }
-    .btn {
-        position: absolute;
-        bottom: 0;
-    }
 }
 </style>
 

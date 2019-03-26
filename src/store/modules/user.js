@@ -1,10 +1,13 @@
-import { getToken, getUserInfo } from '@/api/user'
+import { getToken, getUserInfo, getFamilyList } from '@/api/user'
 const user = {
   state: {
     appid: sessionStorage.getItem('appid') || null,
     openid: sessionStorage.getItem('openid') || null,
     bound: sessionStorage.getItem('bound') || null,
-    userInfo: JSON.parse(sessionStorage.getItem('userInfo')) || null
+    equityId: sessionStorage.getItem('equityId') || null,
+    orderId: sessionStorage.getItem('orderId') || null,
+    userInfo: JSON.parse(sessionStorage.getItem('userInfo')) || null,
+    familyList: JSON.parse(sessionStorage.getItem('familyList')) || null
   },
   mutations: {
     //   openid
@@ -21,10 +24,25 @@ const user = {
       sessionStorage.setItem('bound', bound)
       state.bound = bound
     },
-    //   是否绑定手机 1 绑定了
+    //  微信用户信息
     SET_USER_INFO: (state, userInfo) => {
       sessionStorage.setItem('userInfo', JSON.stringify(userInfo))
       state.userInfo = userInfo
+    },
+    //  家庭成员
+    SET_FAMILY_LIST: (state, familyList) => {
+      sessionStorage.setItem('familyList', JSON.stringify(familyList))
+      state.familyList = familyList
+    },
+    //  服务包Id
+    SET_EQUITY_ID: (state, equityId) => {
+      sessionStorage.setItem('equityId', equityId)
+      state.equityId = equityId
+    },
+    //  服务包订单Id
+    SET_ORDER_ID: (state, orderId) => {
+      sessionStorage.setItem('orderId', orderId)
+      state.orderId = orderId
     }
   },
   actions: {
@@ -49,6 +67,18 @@ const user = {
           .then(res => {
             commit('SET_USER_INFO', res.ITEMS)
             resolve(res.ITEMS)
+          })
+          .catch(error => {
+            reject(error)
+          })
+      })
+    },
+    setFamilyList ({ commit }, openid) {
+      return new Promise((resolve, reject) => {
+        getFamilyList(openid)
+          .then(res => {
+            commit('SET_FAMILY_LIST', res.ITEMS)
+            resolve()
           })
           .catch(error => {
             reject(error)

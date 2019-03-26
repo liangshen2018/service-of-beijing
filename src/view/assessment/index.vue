@@ -161,7 +161,6 @@ export default {
                     }
                 });
             });
-            console.log(items);
             const data = {
                 userTypeId: 21, //一号系统会员类型Id,必传
                 doctorId: 223, //一号系统家庭医生Id,若不传则无法自动分配家庭医生
@@ -170,7 +169,7 @@ export default {
                 endDate: "2020-01-01", //会员有效期结束时间
                 items
             };
-            // const res = await submitAssessment(data);
+            const res = await submitAssessment(data);
         }
     },
     created() {
@@ -182,10 +181,6 @@ export default {
 <style lang="less" scoped>
 .page {
     padding-bottom: 1.5rem;
-    .btn {
-        position: absolute;
-        bottom: 0;
-    }
     .form {
         padding: 0 0.4rem;
         .caption {
@@ -225,7 +220,6 @@ export default {
                 font-size: 0.28rem;
                 display: inline-block;
                 padding-left: 0.5rem;
-                width: 100%;
             }
             input[type="radio"],
             input[type="checkbox"] {

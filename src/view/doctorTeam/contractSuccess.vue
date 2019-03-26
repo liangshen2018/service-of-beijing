@@ -7,11 +7,11 @@
             </div>
             <div class="content">
                 <span class="label">签约患者：</span>
-                <span>xxxx</span>
+                <span>{{}}</span>
             </div>
             <div class="content">
                 <span class="label">家庭医生：</span>
-                <span>xxxx</span>
+                <span>{{}}</span>
             </div>
         </div>
         <div class="button"><span>查看服务详情</span></div>
@@ -19,7 +19,11 @@
 </template>
 
 <script>
-export default {};
+export default {
+    data() {
+
+    }
+};
 </script>
 
 <style lang="less" scoped>

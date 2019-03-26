@@ -188,11 +188,11 @@ const member = [
   },
   {
     id: 10,
-    headImg: 'assets/team/lifenchao/banner.jpg',
+    headImg: 'assets/team/guoyu/banner.jpg',
     teamName: '郭钰医生',
     memberData: [
       {
-        img: 'assets/team/gshuq/doctor.jpg',
+        img: 'assets/team/guoyu/doctor.jpg',
         name: '郭钰 副主任医师',
         content: [
           '北大国家一级健康管理师， ',

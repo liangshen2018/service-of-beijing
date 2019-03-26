@@ -1,13 +1,18 @@
 <template>
     <div class="page">
-        <service-pack-item :list="currentList" @handleDetail="handleDetail"></service-pack-item>
+        <card-item :list="currentList" @handleDetail="handleDetail"></card-item>
         <div class="privilege">
             <h3>你的特权</h3>
             <div class="privilege_info" @click="item.func?item.func():{}" v-for="(item,index) in privilegeData" :key="index">
                 <div class="item clearfix">
                     <div class="title">{{item.title}}</div>
-                    <span class="fl tip">{{item.tip}}</span>
-                    <span class="fr cancel"> {{item.cancel}}</span>
+                    <span class="fl tip" v-if="item.tip">{{item.tip}}</span>
+                    <span class="fr cancel" v-if="item.cancel"> {{item.cancel}}</span>
+                </div>
+            </div>
+            <div class="privilege_info" v-for="equity in equityData" :key="equity">
+                <div class="item clearfix">
+                    <div class="title">{{equity}}</div>
                 </div>
             </div>
         </div>
@@ -15,18 +20,20 @@
 </template>
 
 <script>
-import servicePackItem from "@/components/servicePackItem/index";
+import CardItem from "@/components/CardItem/index";
 import list from "@/common/servicePack";
+import equityList from "./tpl/list";
+import { mapGetters } from "vuex";
 export default {
     components: {
-        servicePackItem
+        CardItem
     },
     data() {
         return {
             currentList: [],
             privilegeData: [
                 {
-                    title: "专属家庭医生签署",
+                    title: "专属家庭医生",
                     tip: "7*24小时守护宝贝的健康",
                     cancel: "未签约",
                     func: this.handleCancel
@@ -38,24 +45,30 @@ export default {
                     func: this.handleAssessment
                 },
                 {
-                    title: "健康管理",
+                    title: "专属健康档案",
                     tip: "私人定制您的健康档案",
                     cancel: "未建档",
                     func: this.handleBabyDetail
                 },
                 {
-                    title: "健康咨询",
+                    title: "电话咨询",
                     tip: "快速接通医生电话，沟通及时",
                     cancel: "咨询",
                     func: this.handleConsultDr
                 }
-            ]
+            ],
+            equityList
         };
     },
     methods: {
+
         handleCancel() {
+            const packageId = this.$route.params.id;
             this.$router.push({
-                name: "doctorTeam"
+                name: "doctorTeam",
+                params:{
+                    packageId
+                }
             });
         },
         handleDetail() {},
@@ -73,6 +86,16 @@ export default {
             this.$router.push({
                 name: "assessment"
             });
+        }
+    },
+    computed: {
+        ...mapGetters(["equityId"]),
+        equityData() {
+            let equityId = this.equityId;
+            console.log(equityId);
+
+            const current = this.equityList.find(item => item.id == equityId);
+            return current.equityData;
         }
     },
     created() {
@@ -93,7 +116,7 @@ export default {
         }
         .privilege_info {
             .item {
-                padding: 0.3rem 0;
+                padding: 0.3rem 0 0.3rem 0.3rem;
                 border-bottom: 1px solid #ebebeb;
             }
             .title {
@@ -121,7 +144,7 @@ export default {
                 );
                 border-radius: 0.4rem;
                 &.active {
-                    background: #DBDBDB;
+                    background: #dbdbdb;
                 }
             }
         }

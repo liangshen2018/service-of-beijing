@@ -1,16 +1,16 @@
 <template>
     <div class="page">
-        <service-pack-item :list="list" @handleDetail="handleDetail"></service-pack-item>
+        <card-item :list="list" @handleDetail="handleDetail"></card-item>
     </div>
 </template>
 
 <script>
 import list from "@/common/servicePack";
-import servicePackItem from "@/components/servicePackItem/index";
+import CardItem from "@/components/CardItem/index";
 
 export default {
     components: {
-        servicePackItem
+        CardItem
     },
     data() {
         return {

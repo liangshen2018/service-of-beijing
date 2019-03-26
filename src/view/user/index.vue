@@ -7,11 +7,14 @@
                 <span class="button" @click="handleEdit"></span>
             </div>
         </div>
-        <div class="meun clearfix">
+        <!-- <div class="meun clearfix">
             <div class="meun_item" @click="handleMyPack">
                 <img src="@/assets/images/board.png" alt="">
                 <p>服务包订单</p>
             </div>
+        </div> -->
+        <div class="service_pack" @click="handleMyPack">
+            <span>服务包订单</span>
         </div>
         <div class="meun">
             <h3>家庭成员</h3>
@@ -49,7 +52,6 @@ export default {
     data() {
         return {
             recordList: {},
-            familyList: [],
             meunList: [
                 {
                     content: "我的消息",
@@ -89,13 +91,10 @@ export default {
         },
         // 获取家庭成员
         async getFamilyList() {
-            const res = await getFamilyList(this.openid);
-            if (res.STATUS === "1") {
-                const d = res.ITEMS;
-                if (d && d.length > 0) {
-                    this.familyList = d;
-                }
+            if(this.familyList){
+                return
             }
+            this.$store.dispatch('setFamilyList',this.openid)
         },
         handleMyPack() {
             this.$router.push({
@@ -132,7 +131,7 @@ export default {
     },
     mixins: [checkUser],
     computed: {
-        ...mapGetters(["openid", "userInfo"])
+        ...mapGetters(["openid", "userInfo",'familyList'])
     },
     created() {
         this.getUserInfo();
@@ -146,7 +145,7 @@ export default {
     padding-bottom: 1rem;
     .user_header {
         padding: 1rem 0.3rem 0 0.3rem;
-        background: url("~@/assets/images/user_h.png") no-repeat;
+        background: url("../../assets/images/user_h.png") no-repeat;
         background-size: 100% 2rem;
         .user_info {
             height: 2rem;
@@ -161,13 +160,13 @@ export default {
                 vertical-align: middle;
                 border-radius: 50%;
                 overflow: hidden;
-                //  background-color: rgb(157, 255, 0);
             }
             .button {
                 width: 0.32rem;
                 height: 0.32rem;
                 display: inline-block;
-                background: url("~@/assets/images/edit.png") no-repeat;
+                background: url("../../assets/images/edit.png") no-repeat;
+                background-size: cover;
                 margin-left: 0.3rem;
             }
         }
@@ -207,7 +206,7 @@ export default {
                 height: 100%;
                 width: 95%;
                 margin: 0 auto;
-                background: url("~@/assets/images/swipe.png") no-repeat;
+                background: url("../../assets/images/swipe.png") no-repeat;
                 background-position-y: bottom;
                 background-color: #fff;
                 background-size: 100% 0.5rem;
@@ -265,6 +264,18 @@ export default {
                 padding-top: 0.1rem;
             }
         }
+    }
+    .service_pack {
+        height: 2.26rem;
+        width: 90%;
+        margin: .4rem auto 0;
+        border-radius: 6px;
+        padding-left: .4rem;
+        color: #fff;
+        font-size: .4rem;
+        line-height: 2.26rem;
+        background: url('~@/assets/team/package.jpg') center no-repeat;
+        background-size: 100%  2.26rem;
     }
 }
 </style>

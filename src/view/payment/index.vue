@@ -12,26 +12,31 @@
         </div>
         <div class="bot">
             <div class="count"><span class="count_left">合计支付:</span>{{packageInfo.price}}元</div>
-            <div class="btn" @click="handleConfirm">确认支付</div>
+            <div class="button" @click="handleConfirm">确认支付</div>
         </div>
     </div>
 </template>
 
 <script>
 import PackList from "@/common/servicePack";
+import { paymentPushOrder } from "@/api/user";
+import { mapGetters } from "vuex";
 export default {
     data() {
         return {
             packageInfo: {},
-            payOption:{
-                appId:'',
-                timeStamp:'',
-                nonceStr:'',
-                package:'',
-                signType:'',
-                paySign:''
+            payOption: {
+                appId: "",
+                timeStamp: "",
+                nonceStr: "",
+                package: "",
+                signType: "",
+                paySign: ""
             }
         };
+    },
+    computed: {
+        ...mapGetters(["openid"])
     },
     methods: {
         // 准备好微信sdk部分
@@ -85,8 +90,25 @@ export default {
             );
         },
         // 确认支付
-        handleConfirm() {
-           this.jsSdk()
+        async handleConfirm() {
+            const openId = this.openid;
+            const packId = this.$route.params.packageId;
+            const userIds = this.$route.query.userIds.split(",");
+            const data = {
+                openId,
+                packId,
+                userIds
+            };
+            const res = await paymentPushOrder(data);
+            if(res.STATUS === '1') {
+                this.$store.commit('SET_ORDER_ID',res.ITEMS.id)
+                this.$router.push({
+                    name:'success',
+                    params:{
+                        packageId:packId
+                    }
+                })
+            }
         }
     },
     created() {
@@ -127,7 +149,7 @@ export default {
             height: 0.36rem;
             position: absolute;
             background: url("~@/assets/images/weixin.png") center no-repeat;
-            background-size: .36rem .36rem;
+            background-size: 0.36rem 0.36rem;
             left: 0.3rem;
             top: 0.3rem;
         }
@@ -136,7 +158,7 @@ export default {
             right: 0.5rem;
             top: 0;
             color: #65d456;
-            font-size: .4rem;
+            font-size: 0.4rem;
         }
     }
     .bot {
@@ -150,13 +172,17 @@ export default {
             font-size: 0.28rem;
         }
         .count,
-        .btn {
+        .button {
             text-align: center;
             width: 50%;
             .count_left {
                 color: #888;
                 margin-right: 0.2rem;
             }
+        }
+        .button {
+            color: #fff;
+            background-color: #ff7b72;
         }
     }
 }

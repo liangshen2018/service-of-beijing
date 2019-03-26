@@ -1,29 +1,44 @@
 <template>
     <div class="page">
-        <team-self :list="list" @handleCancel="handleCancel"></team-self>
+        <card-item :list="list" @handleDetail="handleDetail"></card-item>
     </div>
 </template>
 
 <script>
-import teamSelf from "./components/teamSelf";
+import CardItem from "@/components/CardItem/index";
+import Data from "./tpl/member";
 export default {
     components: {
-        teamSelf
+        CardItem
     },
     data() {
         return {
-            list: [{}, {}]
+            list: []
         };
     },
     methods: {
-        handleCancel(item) {
+        handleDetail(id) {
             this.$router.push({
-                name: "contractFamilyphysic",
+                name: 'teamDetail',
                 params: {
-                    id: 1
+                    id,
                 }
+            })
+        },
+        getDoctorList() {
+            const list = [];
+            Data.forEach(item => {
+                list.push({
+                    id: item.id,
+                    img: item.headImg,
+                    team: item.teamName
+                });
             });
+            this.list = list;
         }
+    },
+    created() {
+        this.getDoctorList()
     }
 };
 </script>
