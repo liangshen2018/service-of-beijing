@@ -1,4 +1,4 @@
-import { getToken, getUserInfo, getFamilyList } from '@/api/user'
+import { getToken, getUserInfo, getFamilyList, getOrderList } from '@/api/user'
 const user = {
   state: {
     appid: sessionStorage.getItem('appid') || null,
@@ -7,7 +7,8 @@ const user = {
     equityId: sessionStorage.getItem('equityId') || null,
     orderId: sessionStorage.getItem('orderId') || null,
     userInfo: JSON.parse(sessionStorage.getItem('userInfo')) || null,
-    familyList: JSON.parse(sessionStorage.getItem('familyList')) || null
+    familyList: JSON.parse(sessionStorage.getItem('familyList')) || null,
+    orderList: JSON.parse(sessionStorage.getItem('orderList')) || null
   },
   mutations: {
     //   openid
@@ -43,6 +44,11 @@ const user = {
     SET_ORDER_ID: (state, orderId) => {
       sessionStorage.setItem('orderId', orderId)
       state.orderId = orderId
+    },
+    //  服务包列表
+    SET_ORDER_LIST: (state, orderList) => {
+      sessionStorage.setItem('orderList', JSON.stringify(orderList))
+      state.orderList = orderList
     }
   },
   actions: {
@@ -79,6 +85,18 @@ const user = {
           .then(res => {
             commit('SET_FAMILY_LIST', res.ITEMS)
             resolve()
+          })
+          .catch(error => {
+            reject(error)
+          })
+      })
+    },
+    setOrderList ({ commit }, openid) {
+      return new Promise((resolve, reject) => {
+        getOrderList(openid)
+          .then(res => {
+            commit('SET_ORDER_LIST', res.ITEMS)
+            resolve(res.ITEMS)
           })
           .catch(error => {
             reject(error)

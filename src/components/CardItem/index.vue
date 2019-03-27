@@ -1,11 +1,11 @@
 <template>
     <div class="service_pack_item">
         <ul class="product">
-            <li class="content" v-for="(item,index) in list" :key="index" :style="{ 'background': 'url(' + require('@/'+ item.img) + ') no-repeat','background-size': 'cover'}" @click="handleDetail(item.id)">
+            <li class="content" v-for="(item,index) in list" :key="index" :style="{ 'background': 'url(' + require('@/'+ item.img) + ') no-repeat','background-size': 'cover'}" @click="handleDetail(item)">
                 <div class="service" v-if="item.title">
                     <h3>{{item.title}}</h3>
                     <p class="tip">{{item.tip}}</p>
-                    <p class="price">¥{{item.price}}</p>
+                    <p class="price" v-if="!item.name">¥{{item.price}}</p>
                     <p class="name">{{item.name}}</p>
                 </div>
                 <p class="team" v-else-if="item.team">{{item.team}}</p>
@@ -43,8 +43,7 @@ export default {
             overflow: hidden;
             border-radius: 4px;
             .service {
-                padding-top: 0.3rem;
-                padding-left: 0.3rem;
+                padding: .3rem 1.5rem 0 .3rem;
             }
             h3 {
                 font-size: 0.4rem;

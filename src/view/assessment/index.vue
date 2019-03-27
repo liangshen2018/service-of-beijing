@@ -9,7 +9,7 @@
                     <div class="input" v-if="child.Type === 'text'">
                         <div class="label">{{row.Title}}</div>
                         <div class="right">
-                            <input type="text" :placeholder="`请输入`" v-model="form[child.Code]">
+                            <input type="text" :placeholder="`请输入`" @focus="isShow =false" @blur="isShow =true" v-model="form[child.Code]">
                         </div>
                     </div>
                     <div class="checkbox" v-if="child.Type === 'checkbox'">
@@ -24,14 +24,14 @@
                         <div class="input" v-for="(extra,extraIndex) in [...Array(child.ShowMore)]" :key="extraIndex">
                             <div class="label">{{child['Title'+(extraIndex+1)]}}:</div>
                             <div class="right">
-                                <input type="text" :placeholder="`请输入`" v-model="form[child.Code][`text${extraIndex+1}`]">
+                                <input type="text" :placeholder="`请输入`" @focus="isShow =false" @blur="isShow =true" v-model="form[child.Code][`text${extraIndex+1}`]">
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="btn" @click="handleSubmit">提交</div>
+        <div class="btn" v-if="isShow" @click="handleSubmit">提交</div>
     </div>
 </template>
 
@@ -42,11 +42,12 @@ export default {
     data() {
         return {
             form: {},
-            formData: []
+            formData: [],
+            isShow:true
         };
     },
     computed: {
-        ...mapGetters(["openid"])
+        ...mapGetters(["openid",'orderId','equityId'])
     },
     methods: {
         // 获取评估表信息
@@ -161,9 +162,17 @@ export default {
                     }
                 });
             });
+            const orderId = this.orderId
+            const packId = this.equityId
+            const userId = this.$route.params.userId
+            const doctorId = this.$route.params.doctorId
             const data = {
-                userTypeId: 21, //一号系统会员类型Id,必传
-                doctorId: 223, //一号系统家庭医生Id,若不传则无法自动分配家庭医生
+                orderId,
+                packId,
+                userId,
+                doctorId,
+                userTypeId: 19, //一号系统会员类型Id,必传
+                 //一号系统家庭医生Id,若不传则无法自动分配家庭医生
                 openId: this.openId, //用于调用微信推送
                 beginDate: "2018-01-01", //会员有效期开始时间
                 endDate: "2020-01-01", //会员有效期结束时间

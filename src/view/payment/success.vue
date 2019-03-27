@@ -13,14 +13,8 @@
 export default {
     methods: {
         handleTeam() {
-            const packageId = this.$route.params.packageId;
-            this.$store.commit("SET_EQUITY_ID", packageId);
-            this.$store;
             this.$router.push({
                 name: "doctorTeam",
-                params: {
-                    packageId
-                }
             });
         }
     }

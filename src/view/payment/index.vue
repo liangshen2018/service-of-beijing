@@ -99,23 +99,41 @@ export default {
                 packId,
                 userIds
             };
+            this.$loading.open();
             const res = await paymentPushOrder(data);
-            if(res.STATUS === '1') {
-                this.$store.commit('SET_ORDER_ID',res.ITEMS.id)
+            this.$loading.close();
+            if (res.STATUS === "1") {
+                const orderId = res.ITEMS.id
+                await this.$store.dispatch("setOrderList", this.openid);
                 this.$router.push({
-                    name:'success',
-                    params:{
-                        packageId:packId
+                    name: "packageInterest",
+                    params: {
+                        id: packId
+                    },
+                    query: {
+                        orderId,
                     }
-                })
+                });
             }
         }
     },
     created() {
         const id = this.$route.params.packageId;
+        const userIds = this.$route.query.userIds.split(",");
         const packageInfo = PackList.find(item => item.id == id);
-        packageInfo.price = packageInfo.price.split("/")[0];
-        this.packageInfo = packageInfo;
+        let price = +packageInfo.price.split("/")[0];
+        if (id == 10) {
+            const addPrice = 800; //家庭服务包 3人每增加一人800
+            userIds.forEach((item, index) => {
+                if (index > 2) {
+                    price += addPrice;
+                }
+            });
+        }
+        this.packageInfo = {
+            price,
+            title: packageInfo.title
+        };
     }
 };
 </script>
@@ -166,6 +184,7 @@ export default {
         bottom: 0;
         height: 1rem;
         line-height: 1rem;
+        max-width: 7.5rem;
         display: flex;
         width: 100%;
         .count {

@@ -7,12 +7,8 @@
         <div class="member clearfix" v-for="(item,index) in data.memberData" :key="index">
             <div class="left"><img :src="require('@/'+item.img)" alt=""></div>
             <div class="right">
-                <div class="member_name clearfix">
-                    <span class="fl">{{item.name}}</span>
-                    <div class="phone fr" @click="dialing">
-                        <span>拨打电话</span>
-                        <img src="@/assets/team/phone.png" alt="">
-                    </div>
+                <div class="member_name ">
+                    {{item.name}}
                 </div>
                 <p class="content" v-for="(child,idx) in item.content" :key="idx">{{child}}</p>
             </div>
@@ -23,7 +19,11 @@
         <div class="equity">
             <img :src="require('@/'+equityImg)" alt="">
         </div>
-        <div class="btn" @click="handleSign">签约家庭医生</div>
+        <div class="bot">
+            <div class="left">联系医生</div>
+            <div class="right" v-if="$route.query.status == 1" >更换家庭医生</div>
+            <div class="right" v-else @click="handleSign">签约家庭医生</div>
+        </div>
     </div>
 </template>
 
@@ -34,45 +34,49 @@ import { teamSign } from "@/api/user";
 export default {
     data() {
         return {
-            data:{},
+            status: 0
+        };
+    },
+    methods: {
+        dialing() {
+            window.location.href = "tel:" + 10086;
+        },
+        async handleSign() {
+            const userId = this.$route.query.userId
+            const data = {
+                orderId: this.orderId,
+                packId: this.equityId,
+                teamId: this.$route.params.id,
+                userId
+            };
+            this.$loading.open();
+            const res = await teamSign(data);
+            this.$loading.close();
+            if (res.STATUS === "1") {
+                const name = this.data.memberData[0].name.split(" ")[0];
+                this.$router.push({
+                    name: "contractSuccess",
+                    query: {
+                        name
+                    }
+                });
+            }
         }
     },
-    methods:{
-       dialing() {
-            window.location.href = "tel:" + 10086;
-       },
-       async handleSign() {
-           const data = {
-               orderId:this.orderId,
-               packId:this.equityId,
-               teamId:this.$route.params.id
-           }
-          const res = await teamSign(data)
-          if(res.STATUS === '1') {
-              const name = data.memberData[0].name.split(' ')
-              this.$router.push({
-                  name:'contractSuccess',
-                  query: {
-                      name,
-                  }
-              })
-          }
-       }
-    },
-    computed:{
-      ...mapGetters(['equityId','openid','orderId']),
-      equityImg() {
-          let equityId = this.equityId
-          if(!equityId){
-              equityId = 1
-          }
-          return `assets/equity/${equityId}.jpg`
-      }
+    computed: {
+        ...mapGetters(["equityId", "openid", "orderId"]),
+        equityImg() {
+            let equityId = this.equityId;
+            if (!equityId) {
+                equityId = 1;
+            }
+            return `assets/equity/${equityId}.jpg`;
+        }
     },
     created() {
-        const id = this.$route.params.id
-        const data = member.find(item => item.id == id)
-        this.data = data
+        const id = this.$route.params.id;
+        const data = member.find(item => item.id == id);
+        this.data = data;
     }
 };
 </script>
@@ -130,6 +134,28 @@ export default {
                 color: #a3a3a3;
                 line-height: 0.36rem;
             }
+        }
+    }
+
+    .bot {
+        position: absolute;
+        bottom: 0;
+        height: 1rem;
+        line-height: 1rem;
+        display: flex;
+        width: 100%;
+        max-width: 7.5rem;
+        border-top: 1px solid #f7f7f7;
+        .left,
+        .right {
+            text-align: center;
+            width: 50%;
+            color: #000;
+            background-color: #fff;
+        }
+        .right {
+            color: #fff;
+            background-color: #ff7b72;
         }
     }
 }

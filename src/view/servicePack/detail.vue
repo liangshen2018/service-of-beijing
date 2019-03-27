@@ -1,22 +1,23 @@
 <template>
     <div class="page">
-        <template v-if="imgList.length > 0">
-            <img :src="require('@/'+item.img)" alt="" v-for="(item,index) in imgList" :key="index">
+        <template v-if="pageData.imgList.length > 0">
+            <div v-for="(item,index) in pageData.imgList" :key="index">
+                <img :src="require('@/'+item.img)" alt="">
+                <div class="href" v-if="item.extra" @click="handleDetail(item.href)">{{item.extra}}</div>
+            </div>
         </template>
-        <div class="purchase">
-            <h2>购买须知</h2>
-            <p>1:购买须知暂无内容</p>
-        </div>
         <div class="btn" @click="hanleBuy">立即购买</div>
         <mt-popup v-model="popupVisible" position="bottom" style="width:100%">
             <div class="content">
                 <h3>
-                    <div class="tip">{{'单选'}}</div>
+                    <div class="tip">{{pageData.type==='checkbox' ? '多选':'单选'}}</div>
                     <span>选择家庭成员</span>
                     <div class="button" @click="handleBabyAdd">新增</div>
                 </h3>
                 <template v-if="formatFamily.length > 0">
-                    <mt-radio align="right" v-model="babyId" :options="formatFamily">
+                    <mt-checklist v-if="pageData.type ==='checkbox'" align="right" v-model="babyIds" :options="formatFamily">
+                    </mt-checklist>
+                    <mt-radio v-else align="right" v-model="babyId" :options="formatFamily">
                     </mt-radio>
                 </template>
                 <div v-else class="tip">暂无宝贝</div>
@@ -34,23 +35,25 @@ export default {
     data() {
         return {
             list,
-            imgList: [],
+            pageData: {
+                imgList: []
+            },
             popupVisible: false,
             babyId: "",
-            value: [],
+            babyIds: []
         };
     },
     computed: {
-        ...mapGetters(["openid", "bound", "appid",'familyList']),
+        ...mapGetters(["openid", "bound", "appid", "familyList"]),
         formatFamily() {
-            const data = []
+            const data = [];
             this.familyList.forEach(item => {
-                  data.push({
-                      value: `${item.id}`,
-                      label: item.name
-                  })
-            })
-            return data
+                data.push({
+                    value: `${item.id}`,
+                    label: item.name
+                });
+            });
+            return data;
         }
     },
     methods: {
@@ -78,15 +81,15 @@ export default {
         getDetailInfo() {
             const id = this.$route.params.id;
             const current = this.list.find(item => item.id == id);
-            this.imgList = current.imgList;
+            this.pageData = current;
         },
         // 获取家庭成员
         async getFamilyList() {
-            if(this.familyList) {
+            if (this.familyList) {
                 this.popupVisible = true;
-                return
+                return;
             }
-            await this.$store.dispatch('setFamilyList',this.openid)
+            await this.$store.dispatch("setFamilyList", this.openid);
             this.popupVisible = true;
         },
         // 新增
@@ -100,24 +103,39 @@ export default {
         },
         // 确认
         handleConfirm() {
-            if (!this.babyId) {
-                this.$message({
-                    message: "请选择家庭成员",
-                    position: "bottom"
-                });
-                return;
+            let userIds;
+            if (this.pageData.type === "checkbox") {
+                if (this.babyIds.length === 0) {
+                    this.$message({
+                        message: "请选择家庭成员",
+                        position: "bottom"
+                    });
+                    return;
+                }
+                userIds = this.babyIds.join(",");
+            } else {
+                if (!this.babyId) {
+                    this.$message({
+                        message: "请选择家庭成员",
+                        position: "bottom"
+                    });
+                    return;
+                }
+                userIds = this.babyId;
             }
-            const userIds = this.babyId
             this.$router.push({
                 name: "payment",
                 params: {
-                    packageId: this.$route.params.id,
-
+                    packageId: this.$route.params.id
                 },
-                query:{
-                    userIds,
+                query: {
+                    userIds
                 }
             });
+        },
+        // 查看专科服务详情外连接
+        handleDetail(href){
+           window.location.href = href
         }
     },
     mounted() {
@@ -129,6 +147,12 @@ export default {
 <style lang="less" scoped>
 .page {
     padding-bottom: 1rem;
+    .href {
+        padding-left: 1rem;
+        padding-bottom: .3rem;
+        color: #2464B2;
+        font-size: .3rem;
+    }
     .purchase {
         h2 {
             font-size: 0.4rem;

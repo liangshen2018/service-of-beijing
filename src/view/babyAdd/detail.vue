@@ -57,9 +57,6 @@ export default {
                 name: "babyUpdate",
                 params: {
                     id: this.$route.params.id
-                },
-                query: {
-                    redirect: this.$route.path
                 }
             });
         },

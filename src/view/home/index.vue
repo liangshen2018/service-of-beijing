@@ -17,21 +17,24 @@
             </ul>
         </div>
         <h3>{{isHavePack? '我的服务包' : '服务包列表'}}</h3>
-        <card-item :list="list" @handleDetail="handleDetail"></card-item>
+        <card-item v-if="isHavePack" :list="list" @handleDetail="handleDetail"></card-item>
+        <card-item v-else :list="packList" @handleDetail="handleDetail"></card-item>
     </div>
 </template>
 
 <script>
-import list from "@/common/servicePack";
+import packList from "@/common/servicePack";
 import CardItem from "@/components/CardItem/index";
+import { mapGetters } from "vuex";
+import { checkUser } from "@/api/user";
 export default {
     components: {
         CardItem
     },
     data() {
         return {
-            isHavePack: false,
-            list,
+            packList,
+            list: [],
             sectionList: [
                 {
                     title: "特色科室",
@@ -52,15 +55,75 @@ export default {
             ]
         };
     },
-    methods: {
-        handleDetail(id) {
-            this.$router.push({
-                name: "servicePackDetail",
-                params: {
-                    id
-                }
-            });
+    computed: {
+        ...mapGetters(["bound", "orderList", "openid",'appid']),
+        isHavePack(){ //true 展示我的服务包
+            return this.list.length > 0
         }
+    },
+    methods: {
+        handleDetail({ id, orderId }) {
+            if (orderId) {
+                this.$router.push({
+                    name: "packageInterest",
+                    params: {
+                        id
+                    },
+                    query: {
+                        orderId
+                    }
+                });
+            } else {
+                this.$router.push({
+                    name: "servicePackDetail",
+                    params: {
+                        id
+                    }
+                });
+            }
+        },
+        async getServiceInfo() {
+            if (this.bound !== "1") {
+                  checkUser(this.openid, this.appid).then(res => {
+                    if (res.ITEMS.bound === 1) {
+                        this.$store.commit("SET_BOUND", res.ITEMS.bound);
+                        this.renderInfo();
+                    }
+                });
+            } else {
+                this.renderInfo();
+            }
+        },
+        async renderInfo() {
+            let d
+            if (!this.orderList || this.orderList.length === 0) {
+                const res = await this.$store.dispatch(
+                    "setOrderList",
+                    this.openid
+                );
+                d = res
+            }else {
+                d = this.orderList
+            }
+            const list = [];
+            if (d && d.length > 0) {
+                d.forEach(item => {
+                    const current = this.packList.find(
+                        pack => pack.id == item.packId
+                    );
+                    const user = item.users.map(child => child.name);
+                    list.push({
+                        ...current,
+                        orderId: item.id,
+                        name: user.join("/")
+                    });
+                });
+                this.list = list;
+            }
+        }
+    },
+    created() {
+        this.getServiceInfo();
     }
 };
 </script>
@@ -74,16 +137,16 @@ export default {
             font-weight: 500;
             color: #000;
             .icon-jiantou {
-                font-size: .36rem;
+                font-size: 0.36rem;
             }
         }
     }
     .banner {
         height: 4rem;
-        padding: 0 .4rem;
+        padding: 0 0.4rem;
         img {
             border-radius: 8px;
-            height: 4rem;;
+            height: 4rem;
         }
     }
     .introduce {

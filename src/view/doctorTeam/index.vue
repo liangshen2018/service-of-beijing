@@ -17,11 +17,14 @@ export default {
         };
     },
     methods: {
-        handleDetail(id) {
+        handleDetail({id}) {
             this.$router.push({
                 name: 'teamDetail',
                 params: {
                     id,
+                },
+                query: {
+                    userId:this.$route.params.userId
                 }
             })
         },

@@ -58,3 +58,8 @@ export function teamSign (data) {
 export function getOrderList (openid) {
   return fetch(`/upms/wx/order/list/${openid}`)
 }
+
+// 获取服务包详情
+export function getOrderInfoById (orderId, userId) {
+  return fetch(`/upms/wx/order/${orderId}/${userId}`)
+}

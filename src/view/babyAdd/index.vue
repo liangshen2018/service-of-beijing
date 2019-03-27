@@ -5,7 +5,7 @@
                 <div class="label">{{item.label}}</div>
                 <template v-if="item.type === 'text'">
                     <div class="right" @click="item.func?item.func(item):{}">
-                        <input type="text" :placeholder="item.placeholder" :readonly="item.readonly" v-model="form[item.prop]">
+                        <input type="text" :placeholder="item.placeholder" @focus="isShow =false" @blur="isShow =true" :readonly="item.readonly" v-model="form[item.prop]">
                     </div>
                 </template>
                 <template v-if="item.type === 'radio'">
@@ -18,7 +18,7 @@
                 </template>
             </div>
         </div>
-        <div class="btn" @click="handleSubmit">提交</div>
+        <div class="btn" @click="handleSubmit" v-if="isShow">提交</div>
         <mt-datetime-picker ref="picker" type="date" :startDate="new Date('1990-10-10')" :endDate="new Date()" @confirm="handleConfirm" v-model="pickerValue">
         </mt-datetime-picker>
         <mt-popup v-model="popupVisible" position="bottom" style="width:100%">
@@ -156,7 +156,8 @@ export default {
             popupVisible: false,
             options: [],
             radioValue: "",
-            radioProp: ""
+            radioProp: "",
+            isShow:true
         };
     },
     computed: {
@@ -260,7 +261,11 @@ export default {
                 // 重新设置家庭成员
                 this.$store.dispatch("setFamilyList", this.openid).then(() => {
                     this.$loading.close();
-                    this.$router.push(this.$route.query.redirect);
+                    if (this.$route.query.redirect) {
+                        this.$router.push(this.$route.query.redirect);
+                    }else {
+                        this.$router.go(-1)
+                    }
                 });
             }
         }

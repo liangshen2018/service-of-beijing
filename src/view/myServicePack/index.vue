@@ -2,7 +2,7 @@
     <div class="page">
         <card-item :list="list" @handleDetail="handleDetail"></card-item>
         <div class="empty" v-if="list.length === 0">
-            暂无服务包
+            {{empty}}
         </div>
     </div>
 </template>
@@ -20,30 +20,53 @@ export default {
     data() {
         return {
             packList,
-            list: []
+            list: [],
+            empty: ""
         };
     },
     computed: {
-        ...mapGetters(["openid"])
+        ...mapGetters(["openid", "orderList"])
     },
     methods: {
-        handleDetail(id) {
-            this.$store.commit("SET_EQUITY_ID", id);
+        handleDetail(item) {
             this.$router.push({
                 name: "packageInterest",
                 params: {
-                    id
+                    id: item.id
+                },
+                query: {
+                    orderId: item.orderId
                 }
             });
         },
         async getOrderList() {
-            const res = await getOrderList(this.openid);
+            let d ;
+            if (!this.orderList || this.orderList.length === 0) {
+                const res = await this.$store.dispatch(
+                    "setOrderList",
+                    this.openid
+                );
+                d = res
+            }else {
+                d = this.orderList
+            }
             const list = [];
-            // ids.forEach(id => {
-            //     const item = list.find(child => child.id == id);
-            //     list.push(item);
-            // });
-            // this.list = list
+            if (d && d.length > 0) {
+                d.forEach(item => {
+                    const current = this.packList.find(
+                        pack => pack.id == item.packId
+                    );
+                    const user = item.users.map(child => child.name);
+                    list.push({
+                        ...current,
+                        orderId: item.id,
+                        name: user.join("/")
+                    });
+                });
+                this.list = list;
+            } else {
+                this.empty = "暂无服务包";
+            }
         }
     },
     created() {
@@ -53,10 +76,10 @@ export default {
 </script>
 
 <style lang="less" scoped>
- .empty {
-     margin: 4rem 0;
-     text-align: center;
-     color: #ABABAB;
- }
+.empty {
+    margin: 4rem 0;
+    text-align: center;
+    color: #ababab;
+}
 </style>
 

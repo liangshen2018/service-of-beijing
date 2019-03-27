@@ -1,13 +1,20 @@
 <template>
     <div class="page">
-        <card-item :list="currentList" @handleDetail="handleDetail"></card-item>
+        <card-item :list="currentList"></card-item>
+        <div class="member" v-if="formatFamily.length > 1">
+            <div class="fl">当前成员:</div>
+            <div class="fl">
+                {{user.name}}
+            </div>
+            <div class="button fr" @click="popupVisible = true">更换成员</div>
+        </div>
         <div class="privilege">
             <h3>你的特权</h3>
-            <div class="privilege_info" @click="item.func?item.func():{}" v-for="(item,index) in privilegeData" :key="index">
+            <div class="privilege_info" @click="item.func?item.func(item):{}" v-for="(item,index) in privilegeData" :key="index">
                 <div class="item clearfix">
                     <div class="title">{{item.title}}</div>
                     <span class="fl tip" v-if="item.tip">{{item.tip}}</span>
-                    <span class="fr cancel" v-if="item.cancel"> {{item.cancel}}</span>
+                    <span class="fr cancel"> {{item.status == 1 ? item.complte : item.cancel}}</span>
                 </div>
             </div>
             <div class="privilege_info" v-for="equity in equityData" :key="equity">
@@ -16,6 +23,14 @@
                 </div>
             </div>
         </div>
+        <mt-popup v-model="popupVisible" position="bottom" style="width:100%">
+            <div class="content">
+                <mt-radio align="right" v-model="user.id" :options="formatFamily">
+                </mt-radio>
+                <div class="empty" style="height:1rem"></div>
+                <div class="btn" @click="handleConfirm">确认</div>
+            </div>
+        </mt-popup>
     </div>
 </template>
 
@@ -24,6 +39,8 @@ import CardItem from "@/components/CardItem/index";
 import list from "@/common/servicePack";
 import equityList from "./tpl/list";
 import { mapGetters } from "vuex";
+import { getOrderInfoById } from "@/api/user";
+import { MessageBox } from "mint-ui";
 export default {
     components: {
         CardItem
@@ -36,79 +53,183 @@ export default {
                     title: "专属家庭医生",
                     tip: "7*24小时守护宝贝的健康",
                     cancel: "未签约",
+                    complte: "已签约",
+                    prop: "isBoundTeam",
                     func: this.handleCancel
                 },
                 {
                     title: "健康自评",
                     tip: "填写你的基本信息",
-                    cancel: "未自评",
+                    cancel: "未填写",
+                    prop: "isRecorded",
+                    complte: "已填写",
                     func: this.handleAssessment
                 },
                 {
                     title: "专属健康档案",
                     tip: "私人定制您的健康档案",
                     cancel: "未建档",
+                    complte: "已建档",
                     func: this.handleBabyDetail
                 },
                 {
                     title: "电话咨询",
                     tip: "快速接通医生电话，沟通及时",
                     cancel: "咨询",
-                    func: this.handleConsultDr
+                    complte: "咨询",
+                    prop: "isBoundTeam",
+                    func: this.handleCancel
                 }
             ],
+            formatFamily: [],
+            user: {
+                id: "",
+                name: ""
+            },
+            popupVisible: false,
             equityList
         };
     },
     methods: {
+        // 获取权益信息
+        getEquityInfo() {
+            const packId = this.$route.params.id;
+            const orderId = this.$route.query.orderId;
+            this.$store.commit("SET_ORDER_ID", orderId);
+            this.$store.commit("SET_EQUITY_ID", packId);
 
-        handleCancel() {
-            const packageId = this.$route.params.id;
-            this.$router.push({
-                name: "doctorTeam",
-                params:{
-                    packageId
+            // 获取服务包卡片信息
+            const pack = list.find(item => item.id == packId);
+            // 获取当前服务包权益信息
+            const order = this.orderList.find(item => item.id == orderId);
+            // 获取套餐成员
+            const formatFamily = [];
+            order.users.forEach((item, index) => {
+                if (index === 0) {
+                    this.user.id = `${item.id}`;
+                }
+                formatFamily.push({
+                    value: `${item.id}`,
+                    label: item.name
+                });
+            });
+            // 获取当前成员信息
+            this.getMemberInfo(this.user.id);
+            this.formatFamily = formatFamily;
+            const currentList = [];
+            currentList.push({ ...pack, name: "-" });
+            this.currentList = currentList;
+        },
+        // 签约/咨询
+        handleCancel(item) {
+            if (item.status == 0) {
+                this.MessageBox();
+            } else {
+                this.$router.push({
+                    name: "teamDetail",
+                    params: {
+                        id: this.user.docInfo.teamId
+                    },
+                    query: {
+                        userId: this.user.id,
+                        status: item.status
+                    }
+                });
+            }
+        },
+        MessageBox() {
+            MessageBox({
+                title: "提示",
+                message: "您还未签约家庭医生,去签约?",
+                showCancelButton: true
+            }).then(action => {
+                if (action == "confirm") {
+                    this.$router.push({
+                        name: "doctorTeam",
+                        params: {
+                            userId: this.user.id
+                        }
+                    });
                 }
             });
         },
-        handleDetail() {},
+        // 成员详情档案
         handleBabyDetail() {
             this.$router.push({
-                name: "babyDetail"
+                name: "babyDetail",
+                params:{
+                    id: this.user.id
+                }
             });
         },
-        handleConsultDr() {
-            this.$router.push({
-                name: "consultDr"
-            });
+        // 填写自评
+        handleAssessment(item) {
+            this.user.isBoundTeam == 0;
+            if (this.user.isBoundTeam == 0) {
+                this.MessageBox();
+                return;
+            }
+            if (item.status == 0) {
+                this.$router.push({
+                    name: "assessment",
+                    params:{
+                        userId:this.user.id,
+                        doctorId:this.user.docInfo.relId
+                    }
+                });
+            } else {
+                this.$message('已填写完自评')
+            }
         },
-        handleAssessment() {
-            this.$router.push({
-                name: "assessment"
-            });
+        // 选择成员确认
+        handleConfirm() {
+            this.popupVisible = false;
+            const userId = this.user.id;
+            this.getMemberInfo(userId);
+        },
+        async getMemberInfo(id) {
+            const orderId = this.$route.query.orderId;
+            this.$loading.open();
+            const res = await getOrderInfoById(orderId, id);
+            this.$loading.close();
+            if (res.STATUS === "1") {
+                const user = res.ITEMS.users.find(item => item.id == id);
+                user.id = `${user.id}`;
+                this.user = user;
+                this.currentList[0].name = this.user.name;
+                this.privilegeData.forEach(item => {
+                    Object.keys(user).forEach(key => {
+                        if (item.prop === key) item.status = user[key];
+                    });
+                });
+            }
         }
     },
     computed: {
-        ...mapGetters(["equityId"]),
+        ...mapGetters(["equityId", "orderList"]),
         equityData() {
             let equityId = this.equityId;
-            console.log(equityId);
-
             const current = this.equityList.find(item => item.id == equityId);
             return current.equityData;
         }
     },
     created() {
-        const id = this.$route.params.id;
-        const currentList = [];
-        currentList.push(list.find(item => item.id == id));
-        this.currentList = currentList;
+        this.getEquityInfo();
     }
 };
 </script>
 
 <style lang="less" scoped>
 .page {
+    .member {
+        padding: 0 0.3rem;
+        height: 0.6rem;
+        line-height: 0.6rem;
+        position: relative;
+        .button {
+            color: #ff7b72;
+        }
+    }
     .privilege {
         padding: 0.3rem;
         h3 {

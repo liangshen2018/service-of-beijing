@@ -7,21 +7,45 @@
             </div>
             <div class="content">
                 <span class="label">签约患者：</span>
-                <span>{{}}</span>
+                <span>{{patientName}}</span>
             </div>
             <div class="content">
                 <span class="label">家庭医生：</span>
-                <span>{{}}</span>
+                <span>{{doctorName}}</span>
             </div>
         </div>
-        <div class="button"><span>查看服务详情</span></div>
+        <div class="button" @click="handlePack"><span>查看服务详情</span></div>
     </div>
 </template>
 
 <script>
 export default {
     data() {
-
+        return {
+            patientName: "",
+            doctorName: ""
+        };
+    },
+    computed: {
+        orderId() {
+            return this.$store.getters.orderId;
+        },
+        equityId() {
+            return this.$store.getters.equityId;
+        }
+    },
+    methods: {
+        handlePack() {
+            this.$router.push({
+                name: "packageInterest",
+                params: {
+                    id: this.equityId
+                },
+                query: {
+                    orderId: this.orderId
+                }
+            });
+        }
     }
 };
 </script>
@@ -32,7 +56,7 @@ export default {
         margin: 0.6rem;
         padding: 1rem 0.5rem;
         font-size: 0.32rem;
-        border: 1px solid #F5F5F5;
+        border: 1px solid #f5f5f5;
         border-radius: 4px;
         .title {
             position: relative;
@@ -53,7 +77,7 @@ export default {
             line-height: 0.8rem;
             font-size: 0.32rem;
             .label {
-                color:#929292;
+                color: #929292;
             }
         }
     }
@@ -61,6 +85,7 @@ export default {
         position: absolute;
         bottom: 2rem;
         width: 100%;
+        max-width: 7.5rem;
         height: 1rem;
         line-height: 1rem;
         text-align: center;
@@ -68,8 +93,8 @@ export default {
             display: inline-block;
             width: 80%;
             height: 100%;
-            border: 1px solid #E5E5E5;
-            border-radius: .5rem;
+            border: 1px solid #e5e5e5;
+            border-radius: 0.5rem;
         }
     }
 }

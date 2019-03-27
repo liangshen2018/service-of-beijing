@@ -9,7 +9,7 @@ const list = [
       { img: 'assets/images/id_1/4.png' },
       { img: 'assets/images/id_1/5.png' },
       { img: 'assets/images/id_1/6.png' },
-      { img: 'assets/images/id_1/7.png' },
+        { img: 'assets/images/id_1/7.png', extra: '查看详情', href:'http://m.ymjzyy.com/yyks/' },
       { img: 'assets/images/id_1/8.png' },
       { img: 'assets/images/id_1/9.png' }
     ]
@@ -110,6 +110,7 @@ const list = [
     ]
   },
   {
+    type: 'checkbox',
     id: 10,
     imgList: [
       { img: 'assets/images/id_10/1.png' },
@@ -126,13 +127,13 @@ const list = [
   {
     id: 11,
     imgList: [
-        { img: 'assets/images/id_11/1.png' },
-        { img: 'assets/images/id_11/2.png' },
-        { img: 'assets/images/id_11/3.png' },
-        { img: 'assets/images/id_11/4.png' },
-        { img: 'assets/images/id_11/5.png' },
-        { img: 'assets/images/id_11/6.png' },
-        { img: 'assets/images/id_11/7.png' },
+      { img: 'assets/images/id_11/1.png' },
+      { img: 'assets/images/id_11/2.png' },
+      { img: 'assets/images/id_11/3.png' },
+      { img: 'assets/images/id_11/4.png' },
+      { img: 'assets/images/id_11/5.png' },
+      { img: 'assets/images/id_11/6.png' },
+      { img: 'assets/images/id_11/7.png' }
     ]
   }
 ]

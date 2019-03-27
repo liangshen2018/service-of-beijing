@@ -117,9 +117,6 @@ export default {
         handleAddBaby() {
             this.$router.push({
                 name: "babyAdd",
-                query: {
-                    redirect: this.$route.path
-                }
             });
         },
         handleConsultDr() {

@@ -18,12 +18,12 @@ export default {
         };
     },
     methods: {
-        handleDetail(id) {
+        handleDetail({id}) {
             this.$router.push({
                 name: "servicePackDetail",
                 params: {
                     id
-                }
+                },
             });
         }
     }

@@ -16,58 +16,58 @@ export default {
                     title: "首页",
                     icon: "icon-shouye",
                     func: this.handleHome,
-                    routeName:'home'
+                    routeName: "home"
                 },
                 {
                     title: "服务包",
-                    icon: "icon-shangcheng1" ,
+                    icon: "icon-shangcheng1",
                     func: this.handleServicePack,
-                    routeName:'servicePack'
+                    routeName: "servicePack"
                 },
                 {
                     title: "个人",
-                    icon: "icon-geren" ,
+                    icon: "icon-geren",
                     func: this.handleUser,
-                    routeName:'user'
+                    routeName: "user"
                 }
             ]
         };
     },
-    computed:{
-       openid() {
-           return this.$store.getters.openid
-       },
-       appid() {
-           return this.$store.getters.appid
-       }
+    computed: {
+        openid() {
+            return this.$store.getters.openid;
+        },
+        appid() {
+            return this.$store.getters.appid;
+        }
     },
     methods: {
         handleHome() {
             this.$router.push({
-                name:'home',
-                params:{
-                    openid:this.openid,
-                    appid:this.appid
+                name: "home",
+                params: {
+                    openid: this.openid,
+                    appid: this.appid
                 }
-            })
+            });
         },
         handleUser() {
-           this.$router.push({
-                name:'user',
-                params:{
-                    openid:this.openid,
-                    appid:this.appid
+            this.$router.push({
+                name: "user",
+                params: {
+                    openid: this.openid,
+                    appid: this.appid
                 }
-            })
+            });
         },
         handleServicePack() {
-             this.$router.push({
-                name:'servicePack',
-                 params:{
-                    openid:this.openid,
-                    appid:this.appid
+            this.$router.push({
+                name: "servicePack",
+                params: {
+                    openid: this.openid,
+                    appid: this.appid
                 }
-            })
+            });
         }
     }
 };
@@ -78,6 +78,7 @@ export default {
     position: absolute;
     bottom: 0;
     width: 100%;
+    max-width: 7.5rem;
     height: 1rem;
     box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.15);
     background-color: #fff;
