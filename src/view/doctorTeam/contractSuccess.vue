@@ -19,19 +19,22 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 export default {
     data() {
         return {
             patientName: "",
-            doctorName: ""
+            doctorName: this.$route.query.name
         };
     },
     computed: {
-        orderId() {
-            return this.$store.getters.orderId;
-        },
-        equityId() {
-            return this.$store.getters.equityId;
+        ...mapGetters(["equityId", "familyList", "orderId"]),
+        equityImg() {
+            let equityId = this.equityId;
+            if (!equityId) {
+                equityId = 1;
+            }
+            return `assets/equity/${equityId}.jpg`;
         }
     },
     methods: {
@@ -42,10 +45,16 @@ export default {
                     id: this.equityId
                 },
                 query: {
-                    orderId: this.orderId
+                    orderId: this.orderId,
+                    userId:this.$route.query.userId
                 }
             });
         }
+    },
+    created() {
+        const userId = this.$route.query.userId
+        const current = this.familyList.find(item => item.id == userId)
+        this.patientName = current.name
     }
 };
 </script>

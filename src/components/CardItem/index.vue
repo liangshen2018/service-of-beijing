@@ -7,6 +7,7 @@
                     <p class="tip">{{item.tip}}</p>
                     <p class="price" v-if="!item.name">¥{{item.price}}</p>
                     <p class="name">{{item.name}}</p>
+                    <p class="endDate" v-if="item.endDate">{{`截止时间:${item.endDate}`}}</p>
                 </div>
                 <p class="team" v-else-if="item.team">{{item.team}}</p>
             </li>
@@ -72,6 +73,10 @@ export default {
                     rgba(0,0,0, 0) 0%,
                     rgba(0,0,0, .73) 100%,
                 );
+            }
+            .endDate {
+                font-size: .28rem;
+                padding: .1rem 0
             }
         }
     }

@@ -50,9 +50,13 @@ export function getFamilyList (openid) {
 export function paymentPushOrder (data) {
   return post(`/upms/wx/payment/pushOrder`, data)
 }
-// 签约家庭医生
+// 更换家庭医生
 export function teamSign (data) {
   return post(`/upms/wx/team/signing`, data)
+}
+// 签约家庭医生
+export function teamChange(data) {
+    return post(`/upms/wx/team/change`, data)
 }
 // 获取服务包订单表
 export function getOrderList (openid) {

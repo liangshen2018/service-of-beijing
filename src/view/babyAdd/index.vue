@@ -5,7 +5,7 @@
                 <div class="label">{{item.label}}</div>
                 <template v-if="item.type === 'text'">
                     <div class="right" @click="item.func?item.func(item):{}">
-                        <input type="text" :placeholder="item.placeholder" @focus="isShow =false" @blur="isShow =true" :readonly="item.readonly" v-model="form[item.prop]">
+                        <input type="text" :placeholder="item.placeholder" :readonly="item.readonly" v-model="form[item.prop]">
                     </div>
                 </template>
                 <template v-if="item.type === 'radio'">
@@ -31,6 +31,7 @@
 </template>
 
 <script>
+import buttonMixin from "@/common/buttonMixin";
 import moment from "moment";
 import { userFamilyEdit, getFamilyList } from "@/api/user";
 import { mapGetters } from "vuex";
@@ -157,9 +158,9 @@ export default {
             options: [],
             radioValue: "",
             radioProp: "",
-            isShow:true
         };
     },
+    mixins:[buttonMixin],
     computed: {
         ...mapGetters(["familyList", "openid"])
     },

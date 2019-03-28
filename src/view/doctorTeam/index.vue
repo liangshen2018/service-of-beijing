@@ -24,7 +24,8 @@ export default {
                     id,
                 },
                 query: {
-                    userId:this.$route.params.userId
+                    userId:this.$route.params.userId,
+                    status:this.$route.query.status
                 }
             })
         },

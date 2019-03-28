@@ -20,9 +20,9 @@
             <img :src="require('@/'+equityImg)" alt="">
         </div>
         <div class="bot">
-            <div class="left">联系医生</div>
-            <div class="right" v-if="$route.query.status == 1" >更换家庭医生</div>
-            <div class="right" v-else @click="handleSign">签约家庭医生</div>
+            <div class="left" @click="dialing">联系医生</div>
+            <div class="right" v-if="userInfo.isBoundTeam == 0" @click="handleSign">签约家庭医生</div>
+            <div class="right" v-else @click="handleTeam">更换家庭医生</div>
         </div>
     </div>
 </template>
@@ -30,19 +30,69 @@
 <script>
 import member from "./tpl/member";
 import { mapGetters } from "vuex";
-import { teamSign } from "@/api/user";
+import { teamSign, getOrderInfoById, teamChange } from "@/api/user";
+import { MessageBox } from "mint-ui";
 export default {
     data() {
         return {
-            status: 0
+            userInfo: {}
         };
     },
     methods: {
         dialing() {
             window.location.href = "tel:" + 10086;
         },
+        async handleTeam() {
+            if (this.userInfo.isChangedTeam == 1) {
+                this.$message("已经更换过了，不能再次更换");
+                return;
+            }
+            const status = this.$route.query.status; // 1 掉接口 0去医生列表
+            if (status == 1) {
+                const action = await MessageBox({
+                    title: "提示",
+                    message: "家庭医生只能更换一次,确定更换吗?",
+                    showCancelButton: true
+                });
+                if (action == "confirm") {
+                    const userId = this.$route.query.userId;
+                    const data = {
+                        orderId: this.orderId,
+                        packId: this.equityId,
+                        teamId: this.$route.params.id,
+                        userId
+                    };
+                    this.$loading.open();
+                    const res = await teamChange(data);
+                    this.$loading.close();
+                    if (res.STATUS === "1") {
+                        this.$message('更换成功')
+                        this.$router.push({
+                            name: "packageInterest",
+                            params: {
+                                id: this.equityId
+                            },
+                            query: {
+                                orderId: this.orderId,
+                                userId
+                            }
+                        });
+                    }
+                }
+            } else {
+                this.$router.push({
+                    name: "doctorTeam",
+                    params: {
+                        userId: this.$route.query.userId
+                    },
+                    query: {
+                        status: 1
+                    }
+                });
+            }
+        },
         async handleSign() {
-            const userId = this.$route.query.userId
+            const userId = this.$route.query.userId;
             const data = {
                 orderId: this.orderId,
                 packId: this.equityId,
@@ -57,9 +107,22 @@ export default {
                 this.$router.push({
                     name: "contractSuccess",
                     query: {
-                        name
+                        name,
+                        userId
                     }
                 });
+            }
+        },
+        async getOrderInfoById() {
+            const userId = this.$route.query.userId;
+            this.$loading.open();
+            const res = await getOrderInfoById(this.orderId, userId);
+            this.$loading.close();
+            if (res.STATUS === "1") {
+                const userInfo = res.ITEMS.users.find(
+                    item => item.id == userId
+                );
+                this.userInfo = userInfo;
             }
         }
     },
@@ -77,6 +140,7 @@ export default {
         const id = this.$route.params.id;
         const data = member.find(item => item.id == id);
         this.data = data;
+        this.getOrderInfoById();
     }
 };
 </script>

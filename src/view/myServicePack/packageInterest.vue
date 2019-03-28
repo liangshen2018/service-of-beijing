@@ -41,6 +41,7 @@ import equityList from "./tpl/list";
 import { mapGetters } from "vuex";
 import { getOrderInfoById } from "@/api/user";
 import { MessageBox } from "mint-ui";
+import  moment  from "moment";
 export default {
     components: {
         CardItem
@@ -95,26 +96,24 @@ export default {
         getEquityInfo() {
             const packId = this.$route.params.id;
             const orderId = this.$route.query.orderId;
+            const userId = this.$route.query.userId;
             this.$store.commit("SET_ORDER_ID", orderId);
             this.$store.commit("SET_EQUITY_ID", packId);
 
-            // 获取服务包卡片信息
+            // 获取服务包卡片信息 静态
             const pack = list.find(item => item.id == packId);
             // 获取当前服务包权益信息
             const order = this.orderList.find(item => item.id == orderId);
             // 获取套餐成员
             const formatFamily = [];
             order.users.forEach((item, index) => {
-                if (index === 0) {
-                    this.user.id = `${item.id}`;
-                }
                 formatFamily.push({
                     value: `${item.id}`,
                     label: item.name
                 });
             });
             // 获取当前成员信息
-            this.getMemberInfo(this.user.id);
+            this.getMemberInfo(userId);
             this.formatFamily = formatFamily;
             const currentList = [];
             currentList.push({ ...pack, name: "-" });
@@ -132,11 +131,11 @@ export default {
                     },
                     query: {
                         userId: this.user.id,
-                        status: item.status
                     }
                 });
             }
         },
+        // 弹框
         MessageBox() {
             MessageBox({
                 title: "提示",
@@ -175,7 +174,7 @@ export default {
                     params:{
                         userId:this.user.id,
                         doctorId:this.user.docInfo.relId
-                    }
+                    },
                 });
             } else {
                 this.$message('已填写完自评')
@@ -187,16 +186,18 @@ export default {
             const userId = this.user.id;
             this.getMemberInfo(userId);
         },
-        async getMemberInfo(id) {
+        async getMemberInfo(userId) {
             const orderId = this.$route.query.orderId;
             this.$loading.open();
-            const res = await getOrderInfoById(orderId, id);
+            const res = await getOrderInfoById(orderId, userId);
             this.$loading.close();
             if (res.STATUS === "1") {
-                const user = res.ITEMS.users.find(item => item.id == id);
+                const d =  res.ITEMS
+                const user = d.users.find(item => item.id == userId);
                 user.id = `${user.id}`;
                 this.user = user;
                 this.currentList[0].name = this.user.name;
+                this.currentList[0].endDate = d.endDate ? moment(d.endDate).format('YYYY-MM-DD') : ''
                 this.privilegeData.forEach(item => {
                     Object.keys(user).forEach(key => {
                         if (item.prop === key) item.status = user[key];

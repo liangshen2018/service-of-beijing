@@ -35,7 +35,8 @@ export default {
                     id: item.id
                 },
                 query: {
-                    orderId: item.orderId
+                    orderId: item.orderId,
+                    userId:item.userId
                 }
             });
         },
@@ -60,6 +61,7 @@ export default {
                     list.push({
                         ...current,
                         orderId: item.id,
+                        userId: item.users[0].id,
                         name: user.join("/")
                     });
                 });

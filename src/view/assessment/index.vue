@@ -9,12 +9,12 @@
                     <div class="input" v-if="child.Type === 'text'">
                         <div class="label">{{row.Title}}</div>
                         <div class="right">
-                            <input type="text" :placeholder="`请输入`" @focus="isShow =false" @blur="isShow =true" v-model="form[child.Code]">
+                            <input type="text" :placeholder="`请输入`"  v-model="form[child.Code]">
                         </div>
                     </div>
                     <div class="checkbox" v-if="child.Type === 'checkbox'">
                         <input type="checkbox" :id="row.Code+childIndex" :value="child.Text" @change="checkboxChange($event,child.Clear,row.Code,row.Items)" v-model="form[row.Code]">
-                        <label :for="row.Code+childIndex"><span>{{child.Text}}  </span><i></i></label>
+                        <label :for="row.Code+childIndex"><span>{{child.Text}} </span><i></i></label>
                     </div>
                     <div class="checkbox" v-if="child.Type === 'radio'">
                         <input type="radio" :id="row.Code+childIndex" :value="child.Text" @change="radioChange($event)" v-model="form[row.Code]">
@@ -36,24 +36,28 @@
 </template>
 
 <script>
-import { getAssessmentList, submitAssessment } from "@/api/user";
+import { getAssessmentList, submitAssessment,getOrderInfoById } from "@/api/user";
+import buttonMixin from "@/common/buttonMixin";
 import { mapGetters } from "vuex";
 export default {
     data() {
         return {
             form: {},
             formData: [],
-            isShow:true
+            userInfo:{}
         };
     },
     computed: {
-        ...mapGetters(["openid",'orderId','equityId'])
+        ...mapGetters(["openid", "orderId", "equityId",'familyList'])
     },
+    mixins:[buttonMixin],
     methods: {
         // 获取评估表信息
         async getAssessmentList() {
+            const userId = this.$route.params.userId;
+            const current = this.familyList.find(item => item.id == userId)
             this.$loading.open();
-            const res = await getAssessmentList(19, 1);
+            const res = await getAssessmentList(19, current.sex);
             this.$loading.close();
             const form = {};
             if (res.STATUS === "1") {
@@ -80,6 +84,7 @@ export default {
                 });
                 this.form = form;
                 this.formData = data;
+                this.getMemberInfo()
             }
         },
         checkboxChange(e, clear, prop, data) {
@@ -102,9 +107,7 @@ export default {
                 }
             }
         },
-        radioChange(e) {
-            console.log(e);
-        },
+        radioChange(e) {},
         // 提交
         async handleSubmit() {
             const items = [];
@@ -149,8 +152,6 @@ export default {
                                     items.push(formItem);
                                 }
                             } else if (row.Items[0].Type === "text") {
-                                console.log(11);
-
                                 if (this.form[key]) {
                                     const formItem = {};
                                     formItem.answerCode = key;
@@ -162,23 +163,43 @@ export default {
                     }
                 });
             });
-            const orderId = this.orderId
-            const packId = this.equityId
-            const userId = this.$route.params.userId
-            const doctorId = this.$route.params.doctorId
+            const orderId = this.orderId;
+            const packId = this.equityId;
+            const userId = this.$route.params.userId;
+            const doctorId = this.$route.params.doctorId;
             const data = {
                 orderId,
                 packId,
                 userId,
                 doctorId,
                 userTypeId: 19, //一号系统会员类型Id,必传
-                 //一号系统家庭医生Id,若不传则无法自动分配家庭医生
+                //一号系统家庭医生Id,若不传则无法自动分配家庭医生
                 openId: this.openId, //用于调用微信推送
-                beginDate: "2018-01-01", //会员有效期开始时间
-                endDate: "2020-01-01", //会员有效期结束时间
+                beginDate: this.userInfo.startDate, //会员有效期开始时间
+                endDate: this.userInfo.endDate, //会员有效期结束时间
                 items
             };
+            this.$loading.open();
             const res = await submitAssessment(data);
+            this.$loading.close();
+            if (res.STATUS === "1") {
+                this.$router.go(-1);
+            }
+        },
+        async getMemberInfo() {
+            const orderId = this.orderId;
+            const userId = this.$route.params.userId;
+            // 身份显示
+            const current = this.familyList.find(item => item.id == userId)
+            this.form.Name= current.name
+            this.form.IDCard = current.idCard
+            // 获取用户beginDate endDate
+            const res = await getOrderInfoById(orderId, userId);
+            if (res.STATUS === "1") {
+                const userInfo = res.ITEMS;
+                this.userInfo = userInfo;
+            }
+
         }
     },
     created() {
@@ -249,8 +270,8 @@ export default {
             input[type="checkbox"] + label > i {
                 content: "";
                 font-size: 0;
-                width: .3rem;
-                height: .3rem;
+                width: 0.3rem;
+                height: 0.3rem;
                 border: 1px solid #cccc;
                 position: absolute;
                 left: 0;
@@ -269,8 +290,8 @@ export default {
                 content: "";
                 transform: rotate(45deg);
                 font-size: 0;
-                width: .06rem;
-                height:0.12rem;
+                width: 0.06rem;
+                height: 0.12rem;
                 border: 1px solid #cccc;
                 position: absolute;
                 left: 0.1rem;

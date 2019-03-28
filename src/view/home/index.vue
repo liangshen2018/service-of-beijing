@@ -17,8 +17,7 @@
             </ul>
         </div>
         <h3>{{isHavePack? '我的服务包' : '服务包列表'}}</h3>
-        <card-item v-if="isHavePack" :list="list" @handleDetail="handleDetail"></card-item>
-        <card-item v-else :list="packList" @handleDetail="handleDetail"></card-item>
+        <card-item :list="isHavePack?list:packList" @handleDetail="handleDetail"></card-item>
     </div>
 </template>
 
@@ -33,8 +32,8 @@ export default {
     },
     data() {
         return {
-            packList,
-            list: [],
+            packList,//所有服务包
+            list: [], //我的服务包
             sectionList: [
                 {
                     title: "特色科室",
@@ -62,7 +61,8 @@ export default {
         }
     },
     methods: {
-        handleDetail({ id, orderId }) {
+        handleDetail({ id, orderId,userId }) {
+            // 我的服务包
             if (orderId) {
                 this.$router.push({
                     name: "packageInterest",
@@ -70,7 +70,8 @@ export default {
                         id
                     },
                     query: {
-                        orderId
+                        orderId,
+                        userId
                     }
                 });
             } else {
@@ -82,6 +83,7 @@ export default {
                 });
             }
         },
+        // 获取我的服务包
         async getServiceInfo() {
             if (this.bound !== "1") {
                   checkUser(this.openid, this.appid).then(res => {
@@ -115,6 +117,7 @@ export default {
                     list.push({
                         ...current,
                         orderId: item.id,
+                        userId: item.users[0].id,
                         name: user.join("/")
                     });
                 });
