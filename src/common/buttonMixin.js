@@ -8,8 +8,8 @@ export default {
     }
   },
   watch: {
-    showHeight() {
-      if (this.docmHeight > this.showHeight) {
+    showHeight (val) {
+      if (this.docmHeight > val) {
         this.isShow = false
       } else {
         this.isShow = true
@@ -18,15 +18,17 @@ export default {
   },
   mounted () {
     // window.onresize监听页面高度的变化
+    this.docmHeight =
+      window.innerHeight ||
+      document.documentElement.clientHeight ||
+      document.body.clientHeight
     window.onresize = () => {
       return (() => {
-        if (!this.isResize) {
-          // 默认屏幕高度
-          this.docmHeight = document.documentElement.clientHeight
-          this.isResize = true
-        }
         // 实时屏幕高度
-        this.showHeight = document.body.clientHeight
+        this.showHeight =
+          window.innerHeight ||
+          document.documentElement.clientHeight ||
+          document.body.clientHeight
       })()
     }
   }

@@ -60,6 +60,7 @@ export default {
                         .dispatch("setUserInfo", this.openid)
                         .then(() => {
                             this.$loading.close();
+                            this.$router.back()
                         });
                 }
             } catch (e) {}

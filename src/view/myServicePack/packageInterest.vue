@@ -2,14 +2,13 @@
     <div class="page">
         <card-item :list="currentList"></card-item>
         <div class="member" v-if="formatFamily.length > 1">
-            <div class="fl">当前成员:</div>
-            <div class="fl">
-                {{user.name}}
-            </div>
             <div class="button fr" @click="popupVisible = true">更换成员</div>
         </div>
         <div class="privilege">
-            <h3>你的特权</h3>
+            <h3>
+                <span class="fl">你的特权</span>
+                <span class="fr button" @click="handleUser">个人中心</span>
+            </h3>
             <div class="privilege_info" @click="item.func?item.func(item):{}" v-for="(item,index) in privilegeData" :key="index">
                 <div class="item clearfix">
                     <div class="title">{{item.title}}</div>
@@ -41,7 +40,7 @@ import equityList from "./tpl/list";
 import { mapGetters } from "vuex";
 import { getOrderInfoById } from "@/api/user";
 import { MessageBox } from "mint-ui";
-import  moment  from "moment";
+import moment from "moment";
 export default {
     components: {
         CardItem
@@ -130,7 +129,7 @@ export default {
                         id: this.user.docInfo.teamId
                     },
                     query: {
-                        userId: this.user.id,
+                        userId: this.user.id
                     }
                 });
             }
@@ -156,7 +155,7 @@ export default {
         handleBabyDetail() {
             this.$router.push({
                 name: "babyDetail",
-                params:{
+                params: {
                     id: this.user.id
                 }
             });
@@ -171,13 +170,13 @@ export default {
             if (item.status == 0) {
                 this.$router.push({
                     name: "assessment",
-                    params:{
-                        userId:this.user.id,
-                        doctorId:this.user.docInfo.relId
-                    },
+                    params: {
+                        userId: this.user.id,
+                        doctorId: this.user.docInfo.relId
+                    }
                 });
             } else {
-                this.$message('已填写完自评')
+                this.$message("已填写完自评");
             }
         },
         // 选择成员确认
@@ -192,22 +191,34 @@ export default {
             const res = await getOrderInfoById(orderId, userId);
             this.$loading.close();
             if (res.STATUS === "1") {
-                const d =  res.ITEMS
+                const d = res.ITEMS;
                 const user = d.users.find(item => item.id == userId);
                 user.id = `${user.id}`;
                 this.user = user;
                 this.currentList[0].name = this.user.name;
-                this.currentList[0].endDate = d.endDate ? moment(d.endDate).format('YYYY-MM-DD') : ''
+                this.currentList[0].endDate = d.endDate
+                    ? moment(d.endDate).format("YYYY-MM-DD")
+                    : "";
                 this.privilegeData.forEach(item => {
                     Object.keys(user).forEach(key => {
                         if (item.prop === key) item.status = user[key];
                     });
                 });
             }
+        },
+        // 个人中心
+        handleUser() {
+            this.$router.push({
+                name: "user",
+                params: {
+                    openid: this.openid,
+                    appid: this.appid
+                }
+            });
         }
     },
     computed: {
-        ...mapGetters(["equityId", "orderList"]),
+        ...mapGetters(["equityId", "orderList", "openid", "appid"]),
         equityData() {
             let equityId = this.equityId;
             const current = this.equityList.find(item => item.id == equityId);
@@ -227,15 +238,20 @@ export default {
         height: 0.6rem;
         line-height: 0.6rem;
         position: relative;
-        .button {
-            color: #ff7b72;
-        }
+    }
+    .button {
+        font-size: 0.28rem;
+        color: #ff7b72;
+        line-height: 0.5rem;
     }
     .privilege {
         padding: 0.3rem;
         h3 {
+            font-weight: 500;
+            height: 1rem;
             line-height: 1rem;
         }
+
         .privilege_info {
             .item {
                 padding: 0.3rem 0 0.3rem 0.3rem;

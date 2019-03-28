@@ -1,8 +1,8 @@
 <template>
-    <div class="page">
+    <div class="page" v-show="isPageShow">
         <template v-if="pageData.imgList.length > 0">
-            <div v-for="(item,index) in pageData.imgList" :key="index">
-                <img :src="require('@/'+item.img)" alt="">
+            <div v-for="(item,index) in pageData.imgList" :key="index" >
+                <img :src="require('@/'+item.img)" @load="loadChange" alt="">
                 <div class="href" v-if="item.extra" @click="handleDetail(item.href)">{{item.extra}}</div>
             </div>
         </template>
@@ -40,7 +40,9 @@ export default {
             },
             popupVisible: false,
             babyId: "",
-            babyIds: []
+            babyIds: [],
+            isPageShow: false, //图片是否加载完成
+            length: 0
         };
     },
     computed: {
@@ -57,6 +59,14 @@ export default {
         }
     },
     methods: {
+        loadChange() {
+            this.length += 1;
+            console.log(this.length);
+            if (this.length === this.pageData.imgList.length && this.length > 0) {
+                this.$loading.close()
+                this.isPageShow = true
+            }
+        },
         // 点击立即购买
         hanleBuy() {
             const openid = this.openid;
@@ -134,11 +144,12 @@ export default {
             });
         },
         // 查看专科服务详情外连接
-        handleDetail(href){
-           window.location.href = href
+        handleDetail(href) {
+            window.location.href = href;
         }
     },
     mounted() {
+        this.$loading.open()
         this.getDetailInfo();
     }
 };
@@ -149,9 +160,9 @@ export default {
     padding-bottom: 1rem;
     .href {
         padding-left: 1rem;
-        padding-bottom: .3rem;
-        color: #2464B2;
-        font-size: .3rem;
+        padding-bottom: 0.3rem;
+        color: #2464b2;
+        font-size: 0.3rem;
     }
     .purchase {
         h2 {
@@ -176,7 +187,6 @@ export default {
             text-align: center;
             height: 1rem;
             line-height: 1rem;
-            border-bottom: 1px solid #f6f6f6;
             position: relative;
             padding: 0 0.5rem;
             .tip {

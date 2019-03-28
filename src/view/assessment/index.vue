@@ -1,5 +1,5 @@
 <template>
-    <div class="page">
+    <div class="page" v-show="isPageShow">
         <div class="form" v-for="(row,rowIndex) in formData" :key="rowIndex">
             <div class="caption" v-if="row.Module">{{row.Module}}</div>
             <div class="question" v-if="row.ModuleHint">{{row.ModuleHint}}</div>
@@ -44,7 +44,8 @@ export default {
         return {
             form: {},
             formData: [],
-            userInfo:{}
+            userInfo:{},
+            isPageShow:false
         };
     },
     computed: {
@@ -59,6 +60,7 @@ export default {
             this.$loading.open();
             const res = await getAssessmentList(19, current.sex);
             this.$loading.close();
+            this.isPageShow = true
             const form = {};
             if (res.STATUS === "1") {
                 const data = JSON.parse(res.ITEMS).Data;

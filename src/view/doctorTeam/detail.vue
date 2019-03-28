@@ -30,17 +30,41 @@
 <script>
 import member from "./tpl/member";
 import { mapGetters } from "vuex";
-import { teamSign, getOrderInfoById, teamChange } from "@/api/user";
+import {
+    teamSign,
+    getOrderInfoById,
+    teamChange,
+    getTeamInfo
+} from "@/api/user";
 import { MessageBox } from "mint-ui";
 export default {
     data() {
         return {
-            userInfo: {}
+            userInfo: {},
+            teamData: {}
         };
     },
     methods: {
-        dialing() {
-            window.location.href = "tel:" + 10086;
+        async dialing() {
+            if (this.userInfo.isBoundTeam == 1) {
+                let phone;
+                this.teamData.staffs.some(item => {
+                    if (item.mobile) {
+                        phone = item.mobile;
+                        return true;
+                    }
+                });
+                window.location.href = "tel:" + phone;
+            } else {
+                const action = await MessageBox({
+                    title: "提示",
+                    message: "还未签约医生,是否拨打客服电话",
+                    showCancelButton: true
+                });
+                if (action == "confirm") {
+                    window.location.href = "tel:" + 18905316531;
+                }
+            }
         },
         async handleTeam() {
             if (this.userInfo.isChangedTeam == 1) {
@@ -66,7 +90,7 @@ export default {
                     const res = await teamChange(data);
                     this.$loading.close();
                     if (res.STATUS === "1") {
-                        this.$message('更换成功')
+                        this.$message("更换成功");
                         this.$router.push({
                             name: "packageInterest",
                             params: {
@@ -115,14 +139,22 @@ export default {
         },
         async getOrderInfoById() {
             const userId = this.$route.query.userId;
-            this.$loading.open();
             const res = await getOrderInfoById(this.orderId, userId);
-            this.$loading.close();
             if (res.STATUS === "1") {
                 const userInfo = res.ITEMS.users.find(
                     item => item.id == userId
                 );
                 this.userInfo = userInfo;
+            }
+        },
+        // 获取医生团队信息
+        async getTeamInfo() {
+            this.$loading.open();
+            const id = this.$route.params.id;
+            const res = await getTeamInfo(id);
+            this.$loading.close();
+            if (res.STATUS === "1") {
+                this.teamData = res.ITEMS;
             }
         }
     },
@@ -141,6 +173,7 @@ export default {
         const data = member.find(item => item.id == id);
         this.data = data;
         this.getOrderInfoById();
+        this.getTeamInfo();
     }
 };
 </script>
@@ -202,7 +235,8 @@ export default {
     }
 
     .bot {
-        position: absolute;
+        position: fixed;
+        top: auto;
         bottom: 0;
         height: 1rem;
         line-height: 1rem;

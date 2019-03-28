@@ -74,7 +74,7 @@ export default {
             {
                 prop: "birthday",
                 label: "出生日期",
-                placeholder: "请输入出生日期",
+                placeholder: "请选择出生日期",
                 type: "text",
                 func: this.openPicker,
                 readonly: true
@@ -274,7 +274,8 @@ export default {
     created() {
         this.getRelation();
         this.routerChange();
-    }
+    },
+
 };
 </script>
 

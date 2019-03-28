@@ -1,8 +1,10 @@
 import router from './router'
 import store from './store'
+import { Indicator } from 'mint-ui'
 // 公从号菜单页
 const menuList = ['user', 'home', 'servicePack']
 router.beforeEach((to, from, next) => {
+  Indicator.close()
   if (!sessionStorage.getItem('token')) {
     store.dispatch('accredit').then(() => {
       if (menuList.includes(to.name)) {

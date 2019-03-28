@@ -112,6 +112,7 @@ export default {
                     },
                     query: {
                         orderId,
+                        userId:userIds[0]
                     }
                 });
             }

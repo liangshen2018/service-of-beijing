@@ -67,3 +67,9 @@ export function getOrderList (openid) {
 export function getOrderInfoById (orderId, userId) {
   return fetch(`/upms/wx/order/${orderId}/${userId}`)
 }
+
+// 获取医生团队信息
+export function getTeamInfo(teamId) {
+    return fetch(`/upms/wx/team/${teamId}`)
+}
+
