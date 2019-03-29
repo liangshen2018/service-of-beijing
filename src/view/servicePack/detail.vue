@@ -20,8 +20,10 @@
                     <mt-radio v-else align="right" v-model="babyId" :options="formatFamily">
                     </mt-radio>
                 </template>
-                <div v-else class="tip">暂无宝贝</div>
-                <div class="empty" style="height:1rem"></div>
+                <div v-else class="empty">
+                    <p><i class="iconfont icon-web__zanwujilu"></i></p>
+                    <p>暂无成员</p>
+                </div>
                 <div class="btn" @click="handleConfirm">确认</div>
             </div>
         </mt-popup>
@@ -61,7 +63,6 @@ export default {
     methods: {
         loadChange() {
             this.length += 1;
-            console.log(this.length);
             if (this.length === this.pageData.imgList.length && this.length > 0) {
                 this.$loading.close()
                 this.isPageShow = true
@@ -182,6 +183,7 @@ export default {
         bottom: 0;
     }
     .content {
+        padding-bottom: 1rem;
         font-size: 0.32rem;
         h3 {
             text-align: center;
@@ -218,11 +220,14 @@ export default {
             font-size: 0.24rem;
             margin-top: 0.1rem;
         }
-        .tip {
+        .empty {
             height: 2rem;
-            line-height: 2rem;
             text-align: center;
             color: #757575;
+            font-size: .28rem;
+            .icon-web__zanwujilu {
+                font-size: 1rem;
+            }
         }
     }
 }

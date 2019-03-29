@@ -9,7 +9,7 @@
                     <div class="input" v-if="child.Type === 'text'">
                         <div class="label">{{row.Title}}</div>
                         <div class="right">
-                            <input type="text" :placeholder="`请输入`"  v-model="form[child.Code]">
+                            <input type="text" :placeholder="`请输入`" v-model="form[child.Code]">
                         </div>
                     </div>
                     <div class="checkbox" v-if="child.Type === 'checkbox'">
@@ -36,7 +36,11 @@
 </template>
 
 <script>
-import { getAssessmentList, submitAssessment,getOrderInfoById } from "@/api/user";
+import {
+    getAssessmentList,
+    submitAssessment,
+    getOrderInfoById
+} from "@/api/user";
 import buttonMixin from "@/common/buttonMixin";
 import { mapGetters } from "vuex";
 export default {
@@ -44,23 +48,23 @@ export default {
         return {
             form: {},
             formData: [],
-            userInfo:{},
-            isPageShow:false
+            userInfo: {},
+            isPageShow: false
         };
     },
     computed: {
-        ...mapGetters(["openid", "orderId", "equityId",'familyList'])
+        ...mapGetters(["openid", "orderId", "equityId", "familyList"])
     },
-    mixins:[buttonMixin],
+    mixins: [buttonMixin],
     methods: {
         // 获取评估表信息
         async getAssessmentList() {
             const userId = this.$route.params.userId;
-            const current = this.familyList.find(item => item.id == userId)
+            const current = this.familyList.find(item => item.id == userId);
             this.$loading.open();
             const res = await getAssessmentList(19, current.sex);
             this.$loading.close();
-            this.isPageShow = true
+            this.isPageShow = true;
             const form = {};
             if (res.STATUS === "1") {
                 const data = JSON.parse(res.ITEMS).Data;
@@ -86,7 +90,7 @@ export default {
                 });
                 this.form = form;
                 this.formData = data;
-                this.getMemberInfo()
+                this.getMemberInfo();
             }
         },
         checkboxChange(e, clear, prop, data) {
@@ -192,16 +196,15 @@ export default {
             const orderId = this.orderId;
             const userId = this.$route.params.userId;
             // 身份显示
-            const current = this.familyList.find(item => item.id == userId)
-            this.form.Name= current.name
-            this.form.IDCard = current.idCard
+            const current = this.familyList.find(item => item.id == userId);
+            this.form.Name = current.name;
+            this.form.IDCard = current.idCard;
             // 获取用户beginDate endDate
             const res = await getOrderInfoById(orderId, userId);
             if (res.STATUS === "1") {
                 const userInfo = res.ITEMS;
                 this.userInfo = userInfo;
             }
-
         }
     },
     created() {
@@ -259,10 +262,9 @@ export default {
             }
             input[type="radio"] + label:before {
                 content: "";
-                font-size: 0;
                 width: 0.2rem;
                 height: 0.2rem;
-                border: 1px solid #cccc;
+                border: 1px solid #ebebeb;
                 position: absolute;
                 left: 0;
                 top: 0.1rem;
@@ -271,15 +273,14 @@ export default {
             }
             input[type="checkbox"] + label > i {
                 content: "";
-                font-size: 0;
                 width: 0.3rem;
                 height: 0.3rem;
-                border: 1px solid #cccc;
+                border: 1px solid #ebebeb;
                 position: absolute;
                 left: 0;
                 top: 0.1rem;
             }
-            input[type="radio"]:checked + label:before {
+            input[type="radio"]:checked + label::before {
                 background-color: #ff7b72;
                 background-clip: content-box;
                 border-color: #ff7b72;
@@ -288,13 +289,12 @@ export default {
                 border-color: #ff7b72;
                 background-color: #ff7b72;
             }
-            input[type="checkbox"] + label > i::after {
+            input[type="checkbox"]:checked + label > i::after {
                 content: "";
                 transform: rotate(45deg);
                 font-size: 0;
                 width: 0.06rem;
                 height: 0.12rem;
-                border: 1px solid #cccc;
                 position: absolute;
                 left: 0.1rem;
                 top: 0.03rem;

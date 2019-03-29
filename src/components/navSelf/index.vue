@@ -8,6 +8,7 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 export default {
     data() {
         return {
@@ -34,12 +35,7 @@ export default {
         };
     },
     computed: {
-        openid() {
-            return this.$store.getters.openid;
-        },
-        appid() {
-            return this.$store.getters.appid;
-        }
+        ...mapGetters(['openid','appid'])
     },
     methods: {
         handleHome() {

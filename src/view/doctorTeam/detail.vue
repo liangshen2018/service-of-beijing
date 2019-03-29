@@ -56,14 +56,7 @@ export default {
                 });
                 window.location.href = "tel:" + phone;
             } else {
-                const action = await MessageBox({
-                    title: "提示",
-                    message: "还未签约医生,是否拨打客服电话",
-                    showCancelButton: true
-                });
-                if (action == "confirm") {
-                    window.location.href = "tel:" + 18905316531;
-                }
+                window.location.href = "tel:" + 18905316531;
             }
         },
         async handleTeam() {

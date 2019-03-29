@@ -13,6 +13,7 @@
                 <li v-for="(item,index) in sectionList" :key="index">
                     <div class="title">{{item.title}}</div>
                     <p class="two-cut">{{item.content}}</p>
+                    <img :src="require('@/'+item.img)" alt="">
                 </li>
             </ul>
         </div>
@@ -32,36 +33,41 @@ export default {
     },
     data() {
         return {
-            packList,//所有服务包
+            packList, //所有服务包
             list: [], //我的服务包
             sectionList: [
                 {
                     title: "特色科室",
-                    content: "耳鼻咽喉科、全科医疗科、眼科、口腔科"
+                    content: "耳鼻咽喉科、全科医疗科、眼科、口腔科",
+                    img: "assets/home/unit.png"
                 },
                 {
                     title: "知名专家团队",
-                    content: "若干三甲医院知名专家常年坐诊"
+                    content: "若干三甲医院知名专家常年坐诊",
+                    img: "assets/home/team.png"
                 },
                 {
                     title: "先进设备",
-                    content: "顶级先进仪器设备 为您提供更精确的测"
+                    content: "顶级先进仪器设备 为您提供更精确的测",
+                    img: "assets/home/facility.png"
                 },
                 {
                     title: "轻松就诊环境",
-                    content: "高级就诊环境，置身其中舒适放松"
+                    content: "高级就诊环境，置身其中舒适放松",
+                    img: "assets/home/environment.png"
                 }
             ]
         };
     },
     computed: {
-        ...mapGetters(["bound", "orderList", "openid",'appid']),
-        isHavePack(){ //true 展示我的服务包
-            return this.list.length > 0
+        ...mapGetters(["bound", "orderList", "openid", "appid"]),
+        isHavePack() {
+            //true 展示我的服务包
+            return this.list.length > 0;
         }
     },
     methods: {
-        handleDetail({ id, orderId,userId }) {
+        handleDetail({ id, orderId, userId }) {
             // 我的服务包
             if (orderId) {
                 this.$router.push({
@@ -86,7 +92,7 @@ export default {
         // 获取我的服务包
         async getServiceInfo() {
             if (this.bound !== "1") {
-                  checkUser(this.openid, this.appid).then(res => {
+                checkUser(this.openid, this.appid).then(res => {
                     if (res.ITEMS.bound === 1) {
                         this.$store.commit("SET_BOUND", res.ITEMS.bound);
                         this.renderInfo();
@@ -97,15 +103,15 @@ export default {
             }
         },
         async renderInfo() {
-            let d
+            let d;
             if (!this.orderList || this.orderList.length === 0) {
                 const res = await this.$store.dispatch(
                     "setOrderList",
                     this.openid
                 );
-                d = res
-            }else {
-                d = this.orderList
+                d = res;
+            } else {
+                d = this.orderList;
             }
             const list = [];
             if (d && d.length > 0) {
@@ -123,6 +129,10 @@ export default {
                 });
                 this.list = list;
             }
+            if (this.familyList) {
+                return;
+            }
+            this.$store.dispatch("setFamilyList", this.openid);
         }
     },
     created() {
@@ -133,6 +143,7 @@ export default {
 
 <style lang="less" scoped>
 .page {
+    padding-bottom: 1rem;
     .page_hearder {
         padding: 0.4rem;
         .address {
@@ -174,6 +185,7 @@ export default {
                 box-shadow: 0px 1px 4px 0px rgba(0, 0, 0, 0.04);
                 border-radius: 2px;
                 padding: 0.3rem 0.8rem 0.3rem 0.1rem;
+                position: relative;
                 .title {
                     font-size: 0.32rem;
                     padding: 0.1rem 0;
@@ -182,6 +194,13 @@ export default {
                     color: #8b8b8b;
                     font-size: 0.2rem;
                     line-height: 0.3rem;
+                }
+                img {
+                    position: absolute;
+                    height: .8rem;
+                    width: .8rem;
+                    right: 0;
+                    top:.4rem;
                 }
             }
         }

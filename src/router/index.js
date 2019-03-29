@@ -42,7 +42,7 @@ const router = new Router({
       path: '/babyAdd',
       name: 'babyAdd',
       meta: {
-        title: '添加宝贝'
+          title: '添加成员'
       },
       component: () => import('@/view/babyAdd/index')
     },
@@ -50,7 +50,7 @@ const router = new Router({
       path: '/baby/detail/:id',
       name: 'babyDetail',
       meta: {
-        title: '宝贝详情'
+        title: '成员详情'
       },
       component: () => import('@/view/babyAdd/detail')
     },
@@ -122,7 +122,7 @@ const router = new Router({
       path: '/teamDetail/:id',
       name: 'teamDetail',
       meta: {
-        title: '签约家庭医生'
+        title: '家庭医生'
       },
       component: () => import('@/view/doctorTeam/detail')
     },

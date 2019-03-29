@@ -5,7 +5,7 @@
                 <div class="label">{{item.label}}</div>
                 <template v-if="item.type === 'text'">
                     <div class="right" @click="item.func?item.func(item):{}">
-                        <input type="text" :placeholder="item.placeholder" :readonly="item.readonly" v-model="form[item.prop]">
+                        <input type="text" :placeholder="item.placeholder" @change="item.prop === 'idCard'?idCardChange(item):{}" :readonly="item.readonly" v-model="form[item.prop]">
                     </div>
                 </template>
                 <template v-if="item.type === 'radio'">
@@ -19,7 +19,7 @@
             </div>
         </div>
         <div class="btn" @click="handleSubmit" v-if="isShow">提交</div>
-        <mt-datetime-picker ref="picker" type="date" :startDate="new Date('1990-10-10')" :endDate="new Date()" @confirm="handleConfirm" v-model="pickerValue">
+        <mt-datetime-picker ref="picker" type="date" :startDate="new Date('1900-01-01')" :endDate="new Date()" @confirm="handleConfirm" v-model="pickerValue">
         </mt-datetime-picker>
         <mt-popup v-model="popupVisible" position="bottom" style="width:100%">
             <div class="content">
@@ -72,14 +72,6 @@ export default {
                 message: "请输入正确的身份证"
             },
             {
-                prop: "birthday",
-                label: "出生日期",
-                placeholder: "请选择出生日期",
-                type: "text",
-                func: this.openPicker,
-                readonly: true
-            },
-            {
                 prop: "relationName",
                 label: "与本人关系",
                 placeholder: "请选择关系",
@@ -88,6 +80,15 @@ export default {
                 opt: [],
                 readonly: true
             },
+            {
+                prop: "birthday",
+                label: "出生日期",
+                placeholder: "请选择出生日期",
+                type: "text",
+                func: this.openPicker,
+                readonly: true
+            },
+
             {
                 prop: "bloodType",
                 label: "ABO血型",
@@ -157,10 +158,10 @@ export default {
             popupVisible: false,
             options: [],
             radioValue: "",
-            radioProp: "",
+            radioProp: ""
         };
     },
-    mixins:[buttonMixin],
+    mixins: [buttonMixin],
     computed: {
         ...mapGetters(["familyList", "openid"])
     },
@@ -189,7 +190,9 @@ export default {
         openPicker() {
             this.$refs.picker.open();
         },
+
         openVisible(item) {
+            this.radioValue = "";
             this.options = item.opt;
             this.radioProp = item.prop;
             this.popupVisible = true;
@@ -214,6 +217,24 @@ export default {
                         item => item.prop === "relationName"
                     );
                     current.opt = relationList;
+                }
+            }
+        },
+        // 获取出生日期
+        idCardChange(item) {
+            const value = this.form[item.prop];
+            if (value) {
+                if (!item.pattern.test(value)) {
+                    this.$message(item.message);
+                } else {
+                    let birthday;
+                    if (value.length == 15) {
+                        birthday = "19" + value.substr(6, 6);
+                    } else if (value.length == 18) {
+                        birthday = value.substr(6, 8);
+                    }
+                    birthday = birthday.replace(/(.{4})(.{2})/, "$1-$2-");
+                    this.form.birthday = birthday;
                 }
             }
         },
@@ -264,8 +285,8 @@ export default {
                     this.$loading.close();
                     if (this.$route.query.redirect) {
                         this.$router.push(this.$route.query.redirect);
-                    }else {
-                        this.$router.go(-1)
+                    } else {
+                        this.$router.go(-1);
                     }
                 });
             }
@@ -274,8 +295,7 @@ export default {
     created() {
         this.getRelation();
         this.routerChange();
-    },
-
+    }
 };
 </script>
 
@@ -301,19 +321,18 @@ export default {
                     padding: 0 0.3rem;
                     font-size: 0.28rem;
                 }
-                input[type="radio"] + label:before {
+                input[type="radio"] + label::before {
                     content: "";
-                    font-size: 0;
                     width: 0.18rem;
                     height: 0.18rem;
-                    border: 1px solid #cccc;
+                    border: 1px solid #ccc;
                     position: absolute;
                     left: -0.15rem;
                     top: 0rem;
                     border-radius: 50%;
                     padding: 0.04rem;
                 }
-                input[type="radio"]:checked + label:before {
+                input[type="radio"]:checked + label::before {
                     background-color: #ff7b72;
                     background-clip: content-box;
                     border-color: #ff7b72;

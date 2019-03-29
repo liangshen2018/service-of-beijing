@@ -78,7 +78,7 @@ export default {
                     cancel: "咨询",
                     complte: "咨询",
                     prop: "isBoundTeam",
-                    func: this.handleCancel
+                    func: this.handleTeam
                 }
             ],
             formatFamily: [],
@@ -118,8 +118,29 @@ export default {
             currentList.push({ ...pack, name: "-" });
             this.currentList = currentList;
         },
-        // 签约/咨询
+        // 签约
         handleCancel(item) {
+            if (item.status == 0) {
+                this.$router.push({
+                    name: "doctorTeam",
+                    params: {
+                        userId: this.user.id
+                    }
+                });
+            } else {
+                this.$router.push({
+                    name: "teamDetail",
+                    params: {
+                        id: this.user.docInfo.teamId
+                    },
+                    query: {
+                        userId: this.user.id
+                    }
+                });
+            }
+        },
+        //咨询
+        handleTeam(item) {
             if (item.status == 0) {
                 this.MessageBox();
             } else {

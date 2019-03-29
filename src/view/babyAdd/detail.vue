@@ -11,7 +11,10 @@
         </div>
         <mt-tab-container v-model="active" swipeable>
             <mt-tab-container-item id="tab1">
-                <div class="empty">暂无病历</div>
+                <div class="empty">
+                    <p><i class="iconfont icon-web__zanwujilu"></i></p>
+                    <p>当前暂无可查看的病历</p>
+                </div>
             </mt-tab-container-item>
             <mt-tab-container-item id="tab2">
                 <div class="row" v-for="(item,index) in babyData" :key="index">
@@ -146,8 +149,12 @@ export default {
 
     .empty {
         text-align: center;
-        line-height: 3rem;
+        padding-top: 2rem;
         color: #7d7d7d;
+        font-size: .24rem;
+        .icon-web__zanwujilu {
+            font-size: 2rem;
+        }
     }
 }
 </style>

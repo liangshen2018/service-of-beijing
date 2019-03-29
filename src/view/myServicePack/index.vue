@@ -1,8 +1,9 @@
 <template>
     <div class="page">
-        <card-item :list="list" @handleDetail="handleDetail"></card-item>
-        <div class="empty" v-if="list.length === 0">
-            {{empty}}
+        <card-item :list="list" @handleDetail="handleDetail" v-if="list.length > 0"></card-item>
+        <div class="empty" v-else>
+            <p><i class="iconfont icon-web__zanwujilu"></i></p>
+            <p>暂无服务包</p>
         </div>
     </div>
 </template>
@@ -21,7 +22,6 @@ export default {
         return {
             packList,
             list: [],
-            empty: ""
         };
     },
     computed: {
@@ -66,8 +66,6 @@ export default {
                     });
                 });
                 this.list = list;
-            } else {
-                this.empty = "暂无服务包";
             }
         }
     },
@@ -81,7 +79,11 @@ export default {
 .empty {
     margin: 4rem 0;
     text-align: center;
-    color: #ababab;
+    color: #8b8b8b;
+    font-size: .32rem;
+    .icon-web__zanwujilu {
+        font-size: 2rem;
+    }
 }
 </style>
 

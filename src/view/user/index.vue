@@ -23,6 +23,26 @@
                     <mt-swipe-item @click.native="handleBabyDatail(item)" v-for="(item,index) in familyList" :key="index">
                         <div class="content">
                             <div class="name">{{item.name}}</div>
+                            <div class="birthday">{{getBabyAge(item.birthday)}}</div>
+                            <ul class="menu">
+                                <li>
+                                    <div>0</div>
+                                    <p>健康评估</p>
+                                </li>
+                                <li>
+                                    <div>0</div>
+                                    <p>随访管理</p>
+                                </li>
+                                <li>
+                                    <div>0</div>
+                                    <p>健康体检</p>
+                                </li>
+                                <li>
+                                    <div>0</div>
+                                    <p>就诊记录</p>
+                                </li>
+
+                            </ul>
                         </div>
                     </mt-swipe-item>
                     <mt-swipe-item>
@@ -48,6 +68,7 @@
 import checkUser from "./mixin.js";
 import { getUserInfo, getFamilyList } from "@/api/user";
 import { mapGetters } from "vuex";
+import { formatSex, getBabyAge } from "@/utils";
 export default {
     data() {
         return {
@@ -73,6 +94,7 @@ export default {
     },
     methods: {
         // 获取用户信息
+        getBabyAge,
         async getUserInfo() {
             if (this.userInfo) {
                 const d = this.userInfo;
@@ -91,10 +113,10 @@ export default {
         },
         // 获取家庭成员
         async getFamilyList() {
-            if(this.familyList){
-                return
+            if (this.familyList) {
+                return;
             }
-            this.$store.dispatch('setFamilyList',this.openid)
+            this.$store.dispatch("setFamilyList", this.openid);
         },
         handleMyPack() {
             this.$router.push({
@@ -116,7 +138,7 @@ export default {
         },
         handleAddBaby() {
             this.$router.push({
-                name: "babyAdd",
+                name: "babyAdd"
             });
         },
         handleConsultDr() {
@@ -128,7 +150,7 @@ export default {
     },
     mixins: [checkUser],
     computed: {
-        ...mapGetters(["openid", "userInfo",'familyList'])
+        ...mapGetters(["openid", "userInfo", "familyList"])
     },
     created() {
         this.getUserInfo();
@@ -211,9 +233,27 @@ export default {
                 border-radius: 4px;
                 border: 1px solid rgba(243, 243, 243, 1);
                 .name {
-                    height: 2rem;
-                    line-height: 2rem;
+                    height: 0.8rem;
+                    line-height: 0.8rem;
                     text-align: center;
+                }
+                .birthday {
+                    text-align: center;
+                    font-size: 0.28rem;
+                    color: #8c8c8c;
+                }
+                .menu {
+                    padding-top: 0.5rem;
+                    display: flex;
+                    li {
+                        width: 25%;
+                        text-align: center;
+                        p {
+                            color: #8B8B8B;
+                            font-size: .28rem;
+                            padding: .1rem 0;
+                        }
+                    }
                 }
                 .button {
                     margin-top: 1rem;
@@ -265,14 +305,14 @@ export default {
     .service_pack {
         height: 2.26rem;
         width: 90%;
-        margin: .4rem auto 0;
+        margin: 0.4rem auto 0;
         border-radius: 6px;
-        padding-left: .4rem;
+        padding-left: 0.4rem;
         color: #fff;
-        font-size: .4rem;
+        font-size: 0.4rem;
         line-height: 2.26rem;
-        background: url('~@/assets/team/package.jpg') center no-repeat;
-        background-size: 100%  2.26rem;
+        background: url("~@/assets/team/package.jpg") center no-repeat;
+        background-size: 100% 2.26rem;
     }
 }
 </style>
