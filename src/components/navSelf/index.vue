@@ -71,8 +71,9 @@ export default {
 
 <style lang="less" scoped>
 .nav {
-    position: absolute;
+    position: fixed;
     bottom: 0;
+    top:auto;
     width: 100%;
     max-width: 7.5rem;
     height: 1rem;

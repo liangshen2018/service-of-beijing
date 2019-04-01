@@ -1,8 +1,8 @@
 <template>
     <div class="page" v-show="isPageShow">
         <template v-if="pageData.imgList.length > 0">
-            <div v-for="(item,index) in pageData.imgList" :key="index" >
-                <img :src="require('@/'+item.img)" @load="loadChange" alt="">
+            <div v-for="(item,index) in pageData.imgList" :key="index">
+                <img v-lazy="require('@/'+item.img)" @load="loadChange" alt="">
                 <div class="href" v-if="item.extra" @click="handleDetail(item.href)">{{item.extra}}</div>
             </div>
         </template>
@@ -43,7 +43,7 @@ export default {
             popupVisible: false,
             babyId: "",
             babyIds: [],
-            isPageShow: false, //图片是否加载完成
+            isPageShow: false,
             length: 0
         };
     },
@@ -51,21 +51,27 @@ export default {
         ...mapGetters(["openid", "bound", "appid", "familyList"]),
         formatFamily() {
             const data = [];
-            this.familyList.forEach(item => {
-                data.push({
-                    value: `${item.id}`,
-                    label: item.name
+            if (this.familyList) {
+                this.familyList.forEach(item => {
+                    data.push({
+                        value: `${item.id}`,
+                        label: item.name
+                    });
                 });
-            });
+            }
             return data;
         }
     },
     methods: {
+        // 解决苹果手机图片未加载时没有高度
         loadChange() {
             this.length += 1;
-            if (this.length === this.pageData.imgList.length && this.length > 0) {
-                this.$loading.close()
-                this.isPageShow = true
+            if (
+                this.length >= this.pageData.imgList.length &&
+                this.length > 0
+            ) {
+                this.$loading.close();
+                this.isPageShow = true;
             }
         },
         // 点击立即购买
@@ -73,8 +79,11 @@ export default {
             const openid = this.openid;
             const appid = this.appid;
             const bound = this.bound;
+            // 是否登入
             if (bound != 1) {
+                this.$loading.open();
                 checkUser(openid, appid).then(res => {
+                    this.$loading.close();
                     if (res.ITEMS.bound === 1) {
                         this.$store.commit("SET_BOUND", res.ITEMS.bound);
                         this.getFamilyList();
@@ -150,7 +159,7 @@ export default {
         }
     },
     mounted() {
-        this.$loading.open()
+        this.$loading.open();
         this.getDetailInfo();
     }
 };
@@ -177,10 +186,6 @@ export default {
             padding-left: 0.4rem;
             margin: 0.4rem 0 1rem 0;
         }
-    }
-    .position {
-        position: fixed;
-        bottom: 0;
     }
     .content {
         padding-bottom: 1rem;
@@ -224,7 +229,7 @@ export default {
             height: 2rem;
             text-align: center;
             color: #757575;
-            font-size: .28rem;
+            font-size: 0.28rem;
             .icon-web__zanwujilu {
                 font-size: 1rem;
             }

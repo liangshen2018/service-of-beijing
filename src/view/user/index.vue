@@ -163,7 +163,7 @@ export default {
 .page {
     padding-bottom: 1rem;
     .user_header {
-        padding: 1rem 0.3rem 0 0.3rem;
+        padding: 1rem 0.3rem 0 0.4rem;
         background: url("../../assets/images/user_h.png") no-repeat;
         background-size: 100% 2rem;
         .user_info {
@@ -195,8 +195,8 @@ export default {
         padding: 0 0.3rem;
         h3 {
             font-size: 0.36rem;
-            padding-left: 0.3rem;
             margin-bottom: 0.3rem;
+            padding-left: .1rem
         }
         .meun_item {
             float: left;
@@ -262,7 +262,7 @@ export default {
                         padding: 0.2rem 0.4rem;
                         border: 1px solid #ff7b72;
                         color: #ff7b72;
-                        border-radius: 0.4rem 0.4rem 0.4rem 0.4rem;
+                        border-radius: .6rem;
                     }
                 }
             }
@@ -307,11 +307,11 @@ export default {
         width: 90%;
         margin: 0.4rem auto 0;
         border-radius: 6px;
-        padding-left: 0.4rem;
+        padding-left: 0.3rem;
         color: #fff;
         font-size: 0.4rem;
         line-height: 2.26rem;
-        background: url("~@/assets/team/package.jpg") center no-repeat;
+        background: url("~@/assets/team/package.png") center no-repeat;
         background-size: 100% 2.26rem;
     }
 }

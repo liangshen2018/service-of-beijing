@@ -44,7 +44,7 @@ export default {
                 label: "姓名",
                 placeholder: "请输入成员姓名",
                 type: "text",
-                pattern: /^[\u4E00-\u9FA5A-Za-z]+$/,
+                pattern: /^[\u4E00-\u9FA5A-Za-z]{1,10}$/,
                 message: "姓名输入不合法"
             },
             {
@@ -71,15 +71,7 @@ export default {
                 pattern: /^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}$|^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3}([0-9]|X)$/,
                 message: "请输入正确的身份证"
             },
-            {
-                prop: "relationName",
-                label: "与本人关系",
-                placeholder: "请选择关系",
-                type: "text",
-                func: this.openVisible,
-                opt: [],
-                readonly: true
-            },
+
             {
                 prop: "birthday",
                 label: "出生日期",
@@ -144,11 +136,25 @@ export default {
                         label: "未查"
                     }
                 ]
+            },
+            {
+                prop: "relationName",
+                label: "与本人关系",
+                placeholder: "请选择关系",
+                type: "text",
+                func: this.openVisible,
+                opt: [],
+                readonly: true
             }
         ];
         const form = {};
         formData.forEach(item => {
             form[item.prop] = "";
+            if (item.prop === "sex") {
+                form[item.prop] = "1";
+            } else {
+                form[item.prop] = "";
+            }
         });
 
         return {

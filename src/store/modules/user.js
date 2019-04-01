@@ -84,7 +84,7 @@ const user = {
         getFamilyList(openid)
           .then(res => {
             commit('SET_FAMILY_LIST', res.ITEMS)
-            resolve()
+              resolve(res.ITEMS)
           })
           .catch(error => {
             reject(error)

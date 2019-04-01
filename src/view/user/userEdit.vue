@@ -53,6 +53,10 @@ export default {
                     this.$message("昵称不能为空");
                     return;
                 }
+                 if (val.value.length > 10) {
+                    this.$message("昵称过长");
+                    return;
+                }
                 this.$loading.open();
                 const res = await userNameEdit(data);
                 if (res.STATUS === "1") {

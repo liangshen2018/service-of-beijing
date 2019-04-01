@@ -91,9 +91,9 @@ export default {
         },
         // 获取我的服务包
         async getServiceInfo() {
-            if (this.bound !== "1") {
+            if (this.bound != 1) {
                 checkUser(this.openid, this.appid).then(res => {
-                    if (res.ITEMS.bound === 1) {
+                    if (res.ITEMS.bound == 1) {
                         this.$store.commit("SET_BOUND", res.ITEMS.bound);
                         this.renderInfo();
                     }

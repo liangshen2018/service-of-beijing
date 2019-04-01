@@ -10,7 +10,7 @@ function errMsg (msg) {
 axios.defaults.baseURL =
   process.env.ENV_CONFIG === 'dev' ? '/api' : process.env.BASE_API
 
-axios.defaults.timeout = 30000
+axios.defaults.timeout = 40000
 // 设置默认请求头
 axios.defaults.headers = {
   'X-Requested-With': 'XMLHttpRequest'
@@ -38,8 +38,9 @@ axios.interceptors.response.use(
         response.status === 304 ||
         response.status === 400)
     ) {
+      const responseURL = response.request.responseURL
       const data = response.data
-      if (data.STATUS === '1' || data.access_token) {
+      if (data.STATUS === '1' || data.access_token || responseURL.includes('/user/check/')) {
         return data
       }
       errMsg(data.MESSAGE)
