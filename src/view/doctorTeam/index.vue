@@ -5,6 +5,7 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 import CardItem from "@/components/CardItem/index";
 import Data from "./tpl/member";
 export default {
@@ -16,33 +17,54 @@ export default {
             list: []
         };
     },
+    computed: {
+        ...mapGetters(["equityId"])
+    },
     methods: {
-        handleDetail({id}) {
+        handleDetail({ id }) {
             this.$router.push({
-                name: 'teamDetail',
+                name: "teamDetail",
                 params: {
-                    id,
+                    id
                 },
                 query: {
-                    userId:this.$route.params.userId,
-                    status:this.$route.query.status
+                    userId: this.$route.params.userId,
+                    status: this.$route.query.status
                 }
-            })
+            });
         },
         getDoctorList() {
+            const packList = [
+                { id: 3, manage: "pediatric" },
+                { id: 8, manage: "TCM" },
+                { id: 9, manage: "TCM" },
+                { id: 11, manage: "pediatric" }
+            ];
+            const packId = this.equityId;
+            const current = packList.find(item => item.id == packId);
             const list = [];
             Data.forEach(item => {
-                list.push({
-                    id: item.id,
-                    img: item.headImg,
-                    team: item.teamName
-                });
+                if (current) {
+                    if(current.manage === item.manage){
+                        list.push({
+                        id: item.id,
+                        img: item.headImg,
+                        team: item.teamName
+                    });
+                    }
+                } else {
+                    list.push({
+                        id: item.id,
+                        img: item.headImg,
+                        team: item.teamName
+                    });
+                }
             });
             this.list = list;
         }
     },
     created() {
-        this.getDoctorList()
+        this.getDoctorList();
     }
 };
 </script>

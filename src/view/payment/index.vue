@@ -1,14 +1,17 @@
 <template>
-    <div class="page">
-        <div class="package">
-            <div class="title fl">{{packageInfo.title}}</div>
-            <div class="right fr">{{packageInfo.price}}元</div>
-        </div>
-        <div class="mode">支付方式</div>
-        <div class="mode_item">
-            <i class="weixin"></i>
-            <span>微信支付</span>
-            <i class="mint-toast-icon mintui mintui-field-success"></i>
+    <div class="page_info">
+        <div class="page">
+            <div class="package clearfix">
+                <div class="title fl">{{packageInfo.title}}</div>
+                <div class="right fr">{{packageInfo.price}}元</div>
+            </div>
+            <div class="mode">支付方式</div>
+            <div class="mode_item">
+                <i class="weixin"></i>
+                <span>微信支付</span>
+                <i class="mint-toast-icon mintui mintui-field-success"></i>
+            </div>
+
         </div>
         <div class="bot">
             <div class="count"><span class="count_left">合计支付:</span>{{packageInfo.price}}元</div>
@@ -103,7 +106,7 @@ export default {
             const res = await paymentPushOrder(data);
             this.$loading.close();
             if (res.STATUS === "1") {
-                const orderId = res.ITEMS.id
+                const orderId = res.ITEMS.id;
                 await this.$store.dispatch("setOrderList", this.openid);
                 this.$router.push({
                     name: "packageInterest",
@@ -112,7 +115,7 @@ export default {
                     },
                     query: {
                         orderId,
-                        userId:userIds[0]
+                        userId: userIds[0]
                     }
                 });
             }
@@ -140,49 +143,58 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.page {
-    .package {
-        height: 2rem;
-        line-height: 2rem;
-        padding: 0 0.3rem;
-        font-size: 0.32rem;
-        border-bottom: 1px solid #f7f7f7;
-    }
-    .mode {
-        padding: 0 0.3rem;
-        font-size: 0.28rem;
-        font-weight: 500;
-        color: rgba(3, 3, 3, 1);
-        line-height: 0.8rem;
-        border-bottom: 1px solid #f7f7f7;
-    }
-    .mode_item {
-        color: #d1d1d1;
-        font-size: 0.24rem;
-        padding-left: 0.8rem;
-        height: 1rem;
-        line-height: 1rem;
-        position: relative;
-        .weixin {
-            width: 0.36rem;
-            height: 0.36rem;
-            position: absolute;
-            background: url("~@/assets/images/weixin.png") center no-repeat;
-            background-size: 0.36rem 0.36rem;
-            left: 0.3rem;
-            top: 0.3rem;
+.page_info {
+    .page {
+        .package {
+            padding: 0 0.3rem;
+            font-size: 0.32rem;
+            border-bottom: 1px solid #f7f7f7;
+            .title {
+                width: 4rem;
+                line-height: 1.1;
+                padding: 0.3rem 0;
+            }
+            .right {
+                padding: 0.3rem 0;
+            }
         }
-        .mintui-field-success {
-            position: absolute;
-            right: 0.5rem;
-            top: 0;
-            color: #65d456;
-            font-size: 0.4rem;
+        .mode {
+            padding: 0 0.3rem;
+            font-size: 0.28rem;
+            font-weight: 500;
+            color: rgba(3, 3, 3, 1);
+            line-height: 0.8rem;
+            border-bottom: 1px solid #f7f7f7;
+        }
+        .mode_item {
+            color: #d1d1d1;
+            font-size: 0.24rem;
+            padding-left: 0.8rem;
+            height: 1rem;
+            line-height: 1rem;
+            position: relative;
+            .weixin {
+                width: 0.36rem;
+                height: 0.36rem;
+                position: absolute;
+                background: url("~@/assets/images/weixin.png") center no-repeat;
+                background-size: 0.36rem 0.36rem;
+                left: 0.3rem;
+                top: 0.3rem;
+            }
+            .mintui-field-success {
+                position: absolute;
+                right: 0.5rem;
+                top: 0;
+                color: #65d456;
+                font-size: 0.4rem;
+            }
         }
     }
     .bot {
-        position: absolute;
+        position: fixed;
         bottom: 0;
+        top: auto;
         height: 1rem;
         line-height: 1rem;
         max-width: 7.5rem;

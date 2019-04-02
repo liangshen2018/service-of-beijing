@@ -1,33 +1,29 @@
 <template>
-    <div class="page">
-        <card-item :list="currentList"></card-item>
-        <div class="member" v-if="formatFamily.length > 1">
-            <div class="button fr" @click="popupVisible = true">更换成员</div>
-        </div>
-        <div class="privilege">
-            <h3>
-                <span class="fl">你的特权</span>
-                <span class="fr button" @click="handleUser">个人中心</span>
-            </h3>
-            <div class="privilege_info" @click="item.func?item.func(item):{}" v-for="(item,index) in privilegeData" :key="index">
-                <div class="item clearfix">
-                    <div class="title">{{item.title}}</div>
-                    <span class="fl tip" v-if="item.tip">{{item.tip}}</span>
-                    <span class="fr cancel"> {{item.status == 1 ? item.complte : item.cancel}}</span>
+    <div class="page_info">
+        <div class="page">
+            <card-item :list="currentList"></card-item>
+            <div class="member" v-if="formatFamily.length > 1">
+                <div class="button fr" @click="popupVisible = true">更换成员</div>
+            </div>
+            <div class="privilege">
+                <h3>
+                    <span class="fl">你的特权</span>
+                    <!-- <span class="fr button" @click="handleUser">个人中心</span> -->
+                </h3>
+                <div class="privilege_info" @click="item.func?item.func(item):{}" v-for="(item,index) in privilegeData" :key="index">
+                    <div class="item clearfix">
+                        <div class="title">{{item.title}}</div>
+                        <span class="fl tip" v-if="item.tip">{{item.tip}}</span>
+                        <span class="fr cancel" v-if="item.button"> {{item.status == 1 ?item.button.complete :item.button.text}}</span>
+                    </div>
                 </div>
             </div>
-            <div class="privilege_info" v-for="equity in equityData" :key="equity">
-                <div class="item clearfix">
-                    <div class="title">{{equity}}</div>
-                </div>
-            </div>
+
         </div>
-        <mt-popup v-model="popupVisible" position="bottom" style="width:100%">
+        <mt-popup v-model="popupVisible" @touchmove.prevent position="bottom" style="width:100%">
             <div class="content">
-                <mt-radio align="right" v-model="user.id" :options="formatFamily">
+                <mt-radio align="right" v-model="user.id" @change="handleConfirm" :options="formatFamily">
                 </mt-radio>
-                <div class="empty" style="height:1rem"></div>
-                <div class="btn" @click="handleConfirm">确认</div>
             </div>
         </mt-popup>
     </div>
@@ -48,39 +44,7 @@ export default {
     data() {
         return {
             currentList: [],
-            privilegeData: [
-                {
-                    title: "专属家庭医生",
-                    tip: "7*24小时守护宝贝的健康",
-                    cancel: "未签约",
-                    complte: "已签约",
-                    prop: "isBoundTeam",
-                    func: this.handleCancel
-                },
-                {
-                    title: "健康自评",
-                    tip: "填写你的基本信息",
-                    cancel: "未填写",
-                    prop: "isRecorded",
-                    complte: "已填写",
-                    func: this.handleAssessment
-                },
-                {
-                    title: "专属健康档案",
-                    tip: "私人定制您的健康档案",
-                    cancel: "未建档",
-                    complte: "已建档",
-                    func: this.handleBabyDetail
-                },
-                {
-                    title: "电话咨询",
-                    tip: "快速接通医生电话，沟通及时",
-                    cancel: "咨询",
-                    complte: "咨询",
-                    prop: "isBoundTeam",
-                    func: this.handleTeam
-                }
-            ],
+            privilegeData: [],
             formatFamily: [],
             user: {
                 id: "",
@@ -141,18 +105,19 @@ export default {
         },
         //咨询
         handleTeam(item) {
-            if (item.status == 0) {
-                this.MessageBox();
+            if (this.user.isBoundTeam == 1) {
+                // 联系医生
+                const phone = this.user.docInfo.mobile;
+                if (phone) {
+                    // 联系医生
+                    window.location.href = "tel:" + phone;
+                } else {
+                    // 联系客服
+                    window.location.href = "tel:" + 18905316531;
+                }
             } else {
-                this.$router.push({
-                    name: "teamDetail",
-                    params: {
-                        id: this.user.docInfo.teamId
-                    },
-                    query: {
-                        userId: this.user.id
-                    }
-                });
+                // 联系客服
+                window.location.href = "tel:" + 18905316531;
             }
         },
         // 弹框
@@ -172,15 +137,6 @@ export default {
                 }
             });
         },
-        // 成员详情档案
-        handleBabyDetail() {
-            this.$router.push({
-                name: "babyDetail",
-                params: {
-                    id: this.user.id
-                }
-            });
-        },
         // 填写自评
         handleAssessment(item) {
             this.user.isBoundTeam == 0;
@@ -188,7 +144,7 @@ export default {
                 this.MessageBox();
                 return;
             }
-            if (item.status == 0) {
+            if (this.user.isRecorded == 0) {
                 this.$router.push({
                     name: "assessment",
                     params: {
@@ -197,7 +153,12 @@ export default {
                     }
                 });
             } else {
-                this.$message("已填写完自评");
+                this.$router.push({
+                    name: "babyDetail",
+                    params: {
+                        id: this.user.id
+                    }
+                });
             }
         },
         // 选择成员确认
@@ -208,6 +169,10 @@ export default {
         },
         async getMemberInfo(userId) {
             const orderId = this.$route.query.orderId;
+            let equityId = this.equityId;
+            // 服务包特权
+            const current = this.equityList.find(item => item.id == equityId);
+            this.privilegeData = current.equityData;
             this.$loading.open();
             const res = await getOrderInfoById(orderId, userId);
             this.$loading.close();
@@ -221,6 +186,18 @@ export default {
                     ? moment(d.endDate).format("YYYY-MM-DD")
                     : "";
                 this.privilegeData.forEach(item => {
+                    if (item.prop === "isBoundTeam") {
+                        item.func = this.handleCancel;
+                    }
+                    if (item.prop === "isRecorded") {
+                        item.func = this.handleAssessment;
+                    }
+                    if (item.prop === "consult") {
+                        item.func = this.handleTeam;
+                    }
+                    if (item.prop === "file") {
+                        item.func = this.handleBabyDetail;
+                    }
                     Object.keys(user).forEach(key => {
                         if (item.prop === key) item.status = user[key];
                     });
@@ -275,8 +252,9 @@ export default {
 
         .privilege_info {
             .item {
-                padding: 0.3rem 0 0.3rem 0.3rem;
+                padding: 0.3rem 1rem 0.3rem 0.3rem;
                 border-bottom: 1px solid #ebebeb;
+                position: relative;
             }
             .title {
                 font-size: 0.32rem;
@@ -292,7 +270,9 @@ export default {
                 color: #fff;
                 height: 0.5rem;
                 width: 1.2rem;
-                display: inline-block;
+                top: 0.5rem;
+                right: 0.3rem;
+                position: absolute;
                 line-height: 0.5rem;
                 text-align: center;
                 font-size: 0.24rem;

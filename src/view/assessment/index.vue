@@ -1,35 +1,38 @@
 <template>
-    <div class="page" v-show="isPageShow">
-        <div class="form" v-for="(row,rowIndex) in formData" :key="rowIndex">
-            <div class="caption" v-if="row.Module">{{row.Module}}</div>
-            <div class="question" v-if="row.ModuleHint">{{row.ModuleHint}}</div>
-            <div class="question" v-if="row.Items[0].Type !=='text'" style="font-weight:600">{{row.Title}}</div>
-            <div class="form_item">
-                <div v-for="(child,childIndex) in row.Items" :key="childIndex">
-                    <div class="input" v-if="child.Type === 'text'">
-                        <div class="label">{{row.Title}}</div>
-                        <div class="right">
-                            <input type="text" :placeholder="`请输入`" v-model="form[child.Code]">
-                        </div>
-                    </div>
-                    <div class="checkbox" v-if="child.Type === 'checkbox'">
-                        <input type="checkbox" :id="row.Code+childIndex" :value="child.Text" @change="checkboxChange($event,child.Clear,row.Code,row.Items)" v-model="form[row.Code]">
-                        <label :for="row.Code+childIndex"><span>{{child.Text}} </span><i></i></label>
-                    </div>
-                    <div class="checkbox" v-if="child.Type === 'radio'">
-                        <input type="radio" :id="row.Code+childIndex" :value="child.Text" @change="radioChange($event)" v-model="form[row.Code]">
-                        <label :for="row.Code+childIndex">{{child.Text}}</label>
-                    </div>
-                    <div class="show_more" v-if="child.ShowMore&&form[row.Code] === child.Text">
-                        <div class="input" v-for="(extra,extraIndex) in [...Array(child.ShowMore)]" :key="extraIndex">
-                            <div class="label">{{child['Title'+(extraIndex+1)]}}:</div>
+    <div class="page_info" v-show="isPageShow">
+        <div class="page" @scroll="scrollEvent">
+            <div class="form" v-for="(row,rowIndex) in formData" :key="rowIndex">
+                <div class="caption" v-if="row.module">{{row.module}}</div>
+                <div class="question" v-if="row.moduleHint">{{row.moduleHint}}</div>
+                <div class="question" v-if="row.items[0].type !=='text'" style="font-weight:600">{{row.title}}</div>
+                <div class="form_item">
+                    <div v-for="(child,childIndex) in row.items" :key="childIndex">
+                        <div class="input" v-if="child.type === 'text'">
+                            <div class="label">{{row.title}}</div>
                             <div class="right">
-                                <input type="text" :placeholder="`请输入`" @focus="isShow =false" @blur="isShow =true" v-model="form[child.Code][`text${extraIndex+1}`]">
+                                <input type="text" :placeholder="`请输入`" v-model="form[child.code]">
+                            </div>
+                        </div>
+                        <div class="checkbox" v-if="child.type === 'checkbox'">
+                            <input type="checkbox" :id="row.code+childIndex" :value="child.text" @change="checkboxChange($event,child.clear,row.code,row.items)" v-model="form[row.code]">
+                            <label :for="row.code+childIndex"><span>{{child.text}} </span><i></i></label>
+                        </div>
+                        <div class="checkbox" v-if="child.type === 'radio'">
+                            <input type="radio" :id="row.code+childIndex" :value="child.text" @change="radioChange($event)" v-model="form[row.code]">
+                            <label :for="row.code+childIndex">{{child.text}}</label>
+                        </div>
+                        <div class="show_more" v-if="child.showMore&&form[row.code] === child.text">
+                            <div class="input" v-for="(extra,extraIndex) in [...Array(child.showMore)]" :key="extraIndex">
+                                <div class="label">{{child['title'+(extraIndex+1)]}}:</div>
+                                <div class="right">
+                                    <input type="text" :placeholder="`请输入`" @focus="isShow =false" @blur="isShow =true" v-model="form[child.code][`text${extraIndex+1}`]">
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
         </div>
         <div class="btn" v-if="isShow" @click="handleSubmit">提交</div>
     </div>
@@ -49,7 +52,10 @@ export default {
             form: {},
             formData: [],
             userInfo: {},
-            isPageShow: false
+            isPageShow: false,
+            pageNo: 1,
+            pages: null,
+            data:[]
         };
     },
     computed: {
@@ -58,45 +64,48 @@ export default {
     mixins: [buttonMixin],
     methods: {
         // 获取评估表信息
-        async getAssessmentList() {
+        async getAssessmentList(pageNo = 1) {
             const userId = this.$route.params.userId;
             const current = this.familyList.find(item => item.id == userId);
             this.$loading.open();
-            const res = await getAssessmentList(19, current.sex);
+            const res = await getAssessmentList(pageNo, 10, current.sex);
             this.$loading.close();
             this.isPageShow = true;
             const form = {};
             if (res.STATUS === "1") {
-                const data = JSON.parse(res.ITEMS).Data;
-                data.forEach(col => {
-                    if (col.Items[0].Type === "checkbox") {
-                        form[col.Code] = [];
-                    } else if (col.Items[0].Type === "text") {
-                        form[col.Items[0].Code] = "";
+                this.pages = res.ITEMS.pages;
+                res.ITEMS.records.forEach(item => {
+                    this.data.push(item);
+                });
+                this.data.forEach(col => {
+                    if (col.items[0].type === "checkbox") {
+                        form[col.code] = [];
+                    } else if (col.items[0].type === "text") {
+                        form[col.items[0].code] = "";
                     } else {
-                        col.Items.forEach(item => {
-                            if (item.ShowMore) {
-                                form[item.Code] = {};
-                                [...Array(item.ShowMore)].forEach(
+                        col.items.forEach(item => {
+                            if (item.showMore) {
+                                form[item.code] = {};
+                                [...Array(item.showMore)].forEach(
                                     (child, index) => {
-                                        form[item.Code][`text${index + 1}`] =
+                                        form[item.code][`text${index + 1}`] =
                                             "";
                                     }
                                 );
                             }
                         });
-                        form[col.Code] = "";
+                        form[col.code] = "";
                     }
                 });
                 this.form = form;
-                this.formData = data;
+                this.formData = this.data;
                 this.getMemberInfo();
             }
         },
         checkboxChange(e, clear, prop, data) {
             const checked = e.target.checked;
             const value = e.target.value;
-            const clearText = data.find(item => item.Clear === 1).Text;
+            const clearText = data.find(item => item.clear === 1).text;
             if (!clearText) {
                 return;
             }
@@ -119,18 +128,18 @@ export default {
             const items = [];
             this.formData.forEach(row => {
                 Object.keys(this.form).forEach(key => {
-                    const isHave = row.Items.some(item => {
-                        return item.Code === key;
+                    const isHave = row.items.some(item => {
+                        return item.code === key;
                     });
-                    if (row.Code === key || isHave) {
+                    if (row.code === key || isHave) {
                         if (Array.isArray(this.form[key])) {
                             this.form[key].forEach(child => {
                                 const formItem = {};
-                                const current = row.Items.find(
-                                    item => item.Text === child
+                                const current = row.items.find(
+                                    item => item.text === child
                                 );
-                                formItem.answerCode = current.Code;
-                                formItem.text = current.Text;
+                                formItem.answerCode = current.code;
+                                formItem.text = current.text;
                                 items.push(formItem);
                             });
                         } else if (
@@ -147,17 +156,17 @@ export default {
                                 }
                             });
                         } else {
-                            if (row.Items[0].Type === "radio") {
+                            if (row.items[0].type === "radio") {
                                 const formItem = {};
-                                const current = row.Items.find(
-                                    item => item.Text === this.form[key]
+                                const current = row.items.find(
+                                    item => item.text === this.form[key]
                                 );
                                 if (current) {
-                                    formItem.answerCode = current.Code;
-                                    formItem.text = current.Text;
+                                    formItem.answerCode = current.code;
+                                    formItem.text = current.text;
                                     items.push(formItem);
                                 }
-                            } else if (row.Items[0].Type === "text") {
+                            } else if (row.items[0].type === "text") {
                                 if (this.form[key]) {
                                     const formItem = {};
                                     formItem.answerCode = key;
@@ -185,12 +194,23 @@ export default {
                 endDate: this.userInfo.endDate, //会员有效期结束时间
                 items
             };
-            this.$loading.open();
-            const res = await submitAssessment(data);
-            this.$loading.close();
-            if (res.STATUS === "1") {
-                this.$router.go(-1);
-            }
+            console.log(items);
+
+            // this.$loading.open();
+            // const res = await submitAssessment(data);
+            // this.$loading.close();
+            // if (res.STATUS === "1") {
+            //     this.$router.push({
+            //         name: "packageInterest",
+            //         params: {
+            //             id: packId
+            //         },
+            //         query: {
+            //             orderId,
+            //             userId
+            //         }
+            //     });
+            // }
         },
         async getMemberInfo() {
             const orderId = this.orderId;
@@ -205,11 +225,25 @@ export default {
                 const userInfo = res.ITEMS;
                 this.userInfo = userInfo;
             }
+        },
+        scrollEvent(e) {
+            //滚动的像素+容器的高度>可滚动的总高度-100像素
+            // if (
+            //     e.srcElement.scrollTop + e.srcElement.offsetHeight >
+            //     e.srcElement.scrollHeight - 200
+            // ) {
+            //     this.pageNo++;
+            //     if(this.pages && this.pageNo > this.pages) {
+            //        return
+            //     }
+            //     this.getAssessmentList(this.pageNo);
+            // }
         }
     },
     created() {
         this.getAssessmentList();
-    }
+    },
+    mounted() {}
 };
 </script>
 

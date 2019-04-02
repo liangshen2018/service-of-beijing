@@ -21,7 +21,7 @@ export default {
     data() {
         return {
             packList,
-            list: [],
+            list: []
         };
     },
     computed: {
@@ -36,20 +36,20 @@ export default {
                 },
                 query: {
                     orderId: item.orderId,
-                    userId:item.userId
+                    userId: item.userId
                 }
             });
         },
         async getOrderList() {
-            let d ;
+            let d;
             if (!this.orderList || this.orderList.length === 0) {
                 const res = await this.$store.dispatch(
                     "setOrderList",
                     this.openid
                 );
-                d = res
-            }else {
-                d = this.orderList
+                d = res;
+            } else {
+                d = this.orderList;
             }
             const list = [];
             if (d && d.length > 0) {
@@ -76,13 +76,16 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.empty {
-    margin: 4rem 0;
-    text-align: center;
-    color: #8b8b8b;
-    font-size: .32rem;
-    .icon-web__zanwujilu {
-        font-size: 2rem;
+.page {
+    height: auto;
+    .empty {
+        margin: 4rem 0;
+        text-align: center;
+        color: #8b8b8b;
+        font-size: 0.32rem;
+        .icon-web__zanwujilu {
+            font-size: 2rem;
+        }
     }
 }
 </style>

@@ -57,8 +57,8 @@ export default {
                 margin-top: 0.3rem;
             }
             .name {
-                font-size: 0.45rem;
-                padding: 0.3rem 0;
+                font-size: 0.4rem;
+                padding: 0.2rem 0;
             }
             .team {
                 position: absolute;

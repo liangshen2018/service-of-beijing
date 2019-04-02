@@ -18,20 +18,21 @@ export default {
         };
     },
     methods: {
-        handleDetail({id}) {
+        handleDetail({ id }) {
             this.$router.push({
                 name: "servicePackDetail",
                 params: {
                     id
-                },
+                }
             });
         }
-    }
+    },
 };
 </script>
 
 <style lang="less" scoped>
 .page {
-    padding-bottom: .5rem;
+    height: auto;
+    padding-bottom: 0.5rem;
 }
 </style>

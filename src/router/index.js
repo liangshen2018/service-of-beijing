@@ -1,9 +1,14 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-
 Vue.use(Router)
-
 const router = new Router({
+  scrollBehavior (to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition
+    } else {
+      return { x: 0, y: 0 }
+    }
+  },
   routes: [
     {
       path: '/home/:openid/:appid',
@@ -25,7 +30,8 @@ const router = new Router({
       path: '/servicePack/:openid/:appid',
       name: 'servicePack',
       meta: {
-        title: '服务包列表'
+        title: '服务包列表',
+        keepAlive: true
       },
       component: () => import('@/view/servicePack/index')
     },
@@ -42,7 +48,7 @@ const router = new Router({
       path: '/babyAdd',
       name: 'babyAdd',
       meta: {
-          title: '添加成员'
+        title: '添加成员'
       },
       component: () => import('@/view/babyAdd/index')
     },
@@ -127,14 +133,6 @@ const router = new Router({
       component: () => import('@/view/doctorTeam/detail')
     },
     {
-      path: '/consultDr',
-      name: 'consultDr',
-      meta: {
-        title: '联系医生'
-      },
-      component: () => import('@/view/doctorTeam/consultDr')
-    },
-    {
       path: '/payment/:packageId',
       name: 'payment',
       meta: {
@@ -151,7 +149,7 @@ const router = new Router({
       component: () => import('@/view/payment/success')
     },
     {
-        path: '/assessment/:userId/:doctorId',
+      path: '/assessment/:userId/:doctorId',
       name: 'assessment',
       meta: {
         title: '填写评估表'

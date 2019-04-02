@@ -20,8 +20,8 @@ export function checkUser (openid, appid) {
 }
 
 // 获取健康自评题
-export function getAssessmentList (id, sex) {
-  return fetch(`/upms/wx/package/health/list/${id}/${sex}`)
+export function getAssessmentList(pageNo, pageSize, sex) {
+    return fetch(`/upms/wx/Questionnaire/page/${ pageNo }/${ pageSize }/${ sex }`)
 }
 // 提交健康自评题
 export function submitAssessment (data) {

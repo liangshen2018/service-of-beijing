@@ -1,30 +1,34 @@
 <template>
-    <div class="page" v-show="isPageShow">
-        <template v-if="pageData.imgList.length > 0">
-            <div v-for="(item,index) in pageData.imgList" :key="index">
-                <img v-lazy="require('@/'+item.img)" @load="loadChange" alt="">
-                <div class="href" v-if="item.extra" @click="handleDetail(item.href)">{{item.extra}}</div>
-            </div>
-        </template>
+    <div class="page_info">
+        <div class="page" v-show="isPageShow" :class="{'noScroll':popupVisible}">
+            <template v-if="pageData.imgList.length > 0">
+                <div v-for="(item,index) in pageData.imgList" :key="index">
+                    <img v-lazy="require('@/'+item.img)" @load="loadChange" alt="">
+                    <div class="href" v-if="item.extra" @click="handleDetail(item.href)">{{item.extra}}</div>
+                </div>
+            </template>
+        </div>
         <div class="btn" @click="hanleBuy">立即购买</div>
         <mt-popup v-model="popupVisible" position="bottom" style="width:100%">
-            <div class="content">
+            <div class="famliy_bottom">
                 <h3>
                     <div class="tip">{{pageData.type==='checkbox' ? '多选':'单选'}}</div>
                     <span>选择家庭成员</span>
                     <div class="button" @click="handleBabyAdd">新增</div>
                 </h3>
-                <template v-if="formatFamily.length > 0">
-                    <mt-checklist v-if="pageData.type ==='checkbox'" align="right" v-model="babyIds" :options="formatFamily">
-                    </mt-checklist>
-                    <mt-radio v-else align="right" v-model="babyId" :options="formatFamily">
-                    </mt-radio>
-                </template>
-                <div v-else class="empty">
-                    <p><i class="iconfont icon-web__zanwujilu"></i></p>
-                    <p>暂无成员</p>
+                <div class="content">
+                    <template v-if="formatFamily.length > 0">
+                        <mt-checklist v-if="pageData.type ==='checkbox'" align="right" v-model="babyIds" :options="formatFamily">
+                        </mt-checklist>
+                        <mt-radio v-else align="right" v-model="babyId" :options="formatFamily">
+                        </mt-radio>
+                    </template>
+                    <div v-else class="empty">
+                        <p><i class="iconfont icon-web__zanwujilu"></i></p>
+                        <p>暂无成员</p>
+                    </div>
                 </div>
-                <div class="btn" @click="handleConfirm">确认</div>
+                <div class="confim" @click="handleConfirm">确认</div>
             </div>
         </mt-popup>
     </div>
@@ -53,7 +57,7 @@ export default {
             const data = [];
             if (this.familyList) {
                 this.familyList.forEach(item => {
-                    data.push({
+                    data.unshift({
                         value: `${item.id}`,
                         label: item.name
                     });
@@ -72,6 +76,9 @@ export default {
             ) {
                 this.$loading.close();
                 this.isPageShow = true;
+                this.popupVisible = this.$route.query.popupVisible
+                    ? true
+                    : false;
             }
         },
         // 点击立即购买
@@ -166,36 +173,50 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.page {
-    padding-bottom: 1rem;
-    .href {
-        padding-left: 1rem;
-        padding-bottom: 0.3rem;
-        color: #2464b2;
-        font-size: 0.3rem;
-    }
-    .purchase {
-        h2 {
-            font-size: 0.4rem;
-            padding-left: 0.4rem;
-            margin-top: 1rem;
-        }
-        p {
-            font-size: 0.3rem;
-            color: #757575;
-            padding-left: 0.4rem;
-            margin: 0.4rem 0 1rem 0;
-        }
-    }
-    .content {
+.page_info {
+    .page {
         padding-bottom: 1rem;
+        .href {
+            padding-left: 1rem;
+            padding-bottom: 0.3rem;
+            color: #2464b2;
+            font-size: 0.3rem;
+        }
+        .purchase {
+            h2 {
+                font-size: 0.4rem;
+                padding-left: 0.4rem;
+                margin-top: 1rem;
+            }
+            p {
+                font-size: 0.3rem;
+                color: #757575;
+                padding-left: 0.4rem;
+                margin: 0.4rem 0 1rem 0;
+            }
+        }
+    }
+    .famliy_bottom {
+        padding-top: 1rem;
         font-size: 0.32rem;
-        h3 {
+        position: relative;
+        .confim {
+            max-width: 7.5rem;
             text-align: center;
             height: 1rem;
             line-height: 1rem;
-            position: relative;
+            font-size: 0.36rem;
+            background-color: #ff7b72;
+            color: #fff;
+        }
+        h3 {
+            top: 0;
+            text-align: center;
+            height: 1rem;
+            line-height: 1rem;
+            position: absolute;
             padding: 0 0.5rem;
+            width: 100%;
             .tip {
                 position: absolute;
                 font-size: 0.3rem;
@@ -217,9 +238,6 @@ export default {
                 top: 0;
             }
         }
-        li {
-            padding: 0.2rem 0.2rem 0.2rem 0.4rem;
-        }
         .age {
             color: #757575;
             font-size: 0.24rem;
@@ -234,6 +252,9 @@ export default {
                 font-size: 1rem;
             }
         }
+    }
+    .noScroll {
+        overflow-y: hidden;
     }
 }
 </style>

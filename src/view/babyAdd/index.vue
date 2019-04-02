@@ -1,22 +1,30 @@
 <template>
-    <div class="page">
-        <div class="form">
-            <div class="form_item" v-for="(item,index) in formData" :key="index">
-                <div class="label">{{item.label}}</div>
-                <template v-if="item.type === 'text'">
-                    <div class="right" @click="item.func?item.func(item):{}">
-                        <input type="text" :placeholder="item.placeholder" @change="item.prop === 'idCard'?idCardChange(item):{}" :readonly="item.readonly" v-model="form[item.prop]">
-                    </div>
-                </template>
-                <template v-if="item.type === 'radio'">
-                    <div class="right" style="text-align:right">
-                        <template v-for="opt in item.opt">
-                            <input type="radio" :id="`_${opt.label}`" :value="opt.value" v-model="form[item.prop]" class="radio">
-                            <label :for="`_${opt.label}`">{{opt.label}}</label>
-                        </template>
-                    </div>
-                </template>
+    <div class="page_info">
+        <div class="page">
+            <div class="form">
+                <div class="form_item" v-for="(item,index) in formData" :key="index">
+                    <div class="label">{{item.label}}</div>
+                    <template v-if="item.type === 'text'">
+                        <div class="right" @click="item.func?item.func(item):{}">
+                            <input type="text" :placeholder="item.placeholder" @change="item.prop === 'idCard'?idCardChange(item):{}" :disabled="item.readonly" v-model="form[item.prop]">
+                        </div>
+                    </template>
+                    <template v-if="item.type === 'select'">
+                        <div class="right" :class="{'placeholder': !form[item.prop]}" style="text-align:right" @click="item.func?item.func(item):{}">
+                            {{form[item.prop] ? form[item.prop] :item.placeholder}}
+                        </div>
+                    </template>
+                    <template v-if="item.type === 'radio'">
+                        <div class="right" style="text-align:right">
+                            <template v-for="opt in item.opt">
+                                <input type="radio" :id="`_${opt.label}`" :value="opt.value" v-model="form[item.prop]" class="radio">
+                                <label :for="`_${opt.label}`">{{opt.label}}</label>
+                            </template>
+                        </div>
+                    </template>
+                </div>
             </div>
+
         </div>
         <div class="btn" @click="handleSubmit" v-if="isShow">提交</div>
         <mt-datetime-picker ref="picker" type="date" :startDate="new Date('1900-01-01')" :endDate="new Date()" @confirm="handleConfirm" v-model="pickerValue">
@@ -76,7 +84,7 @@ export default {
                 prop: "birthday",
                 label: "出生日期",
                 placeholder: "请选择出生日期",
-                type: "text",
+                type: "select",
                 func: this.openPicker,
                 readonly: true
             },
@@ -85,7 +93,7 @@ export default {
                 prop: "bloodType",
                 label: "ABO血型",
                 placeholder: "请选择ABO血型",
-                type: "text",
+                type: "select",
                 func: this.openVisible,
                 readonly: true,
                 opt: [
@@ -115,7 +123,7 @@ export default {
                 prop: "bloodTypeRh",
                 label: "RH血型",
                 placeholder: "请选择RH血型",
-                type: "text",
+                type: "select",
                 func: this.openVisible,
                 readonly: true,
                 opt: [
@@ -141,7 +149,7 @@ export default {
                 prop: "relationName",
                 label: "与本人关系",
                 placeholder: "请选择关系",
-                type: "text",
+                type: "select",
                 func: this.openVisible,
                 opt: [],
                 readonly: true
@@ -194,10 +202,23 @@ export default {
         },
         // 选择出生日期
         openPicker() {
+            if (!this.pickerValue) {
+                if (this.form.birthday) {
+                    this.pickerValue = this.form.birthday;
+                } else {
+                    this.pickerValue = "1990-05-05";
+                }
+            }
             this.$refs.picker.open();
         },
 
         openVisible(item) {
+            // if (item.opt.length > 5) {
+            //     this.$message({
+            //         message: "可滑动选择",
+            //         position: "bottom"
+            //     });
+            // }
             this.radioValue = "";
             this.options = item.opt;
             this.radioProp = item.prop;
@@ -241,6 +262,7 @@ export default {
                     }
                     birthday = birthday.replace(/(.{4})(.{2})/, "$1-$2-");
                     this.form.birthday = birthday;
+                    this.pickerValue = birthday;
                 }
             }
         },
@@ -276,6 +298,7 @@ export default {
             if (this.$route.name === "babyUpdate") {
                 data.id = this.$route.params.id;
             }
+
             data.birthday = moment(data.birthday).format("YYYY-MM-DD HH:mm:ss");
             const relationList = this.formData.find(
                 item => item.prop === "relationName"
@@ -285,12 +308,18 @@ export default {
             ).value;
             this.$loading.open();
             const res = await userFamilyEdit(data);
+            this.$loading.close();
             if (res.STATUS === "1") {
                 // 重新设置家庭成员
+                this.$loading.open();
                 this.$store.dispatch("setFamilyList", this.openid).then(() => {
                     this.$loading.close();
-                    if (this.$route.query.redirect) {
-                        this.$router.push(this.$route.query.redirect);
+                    let redirect = this.$route.query.redirect;
+                    if (redirect) {
+                        if (redirect.includes("servicePack")) {
+                            redirect = redirect + "?popupVisible=true";
+                        }
+                        this.$router.push(redirect);
                     } else {
                         this.$router.go(-1);
                     }
@@ -316,11 +345,18 @@ export default {
             .label {
                 float: left;
             }
+            .placeholder {
+                color: #8b8b8b;
+            }
             .right {
                 overflow: hidden;
                 input[type="text"] {
                     width: 100%;
                     text-align: right;
+                }
+                input[disabled],
+                input:disabled {
+                    background-color: #fff;
                 }
                 label {
                     position: relative;

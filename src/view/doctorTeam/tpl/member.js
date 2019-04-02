@@ -143,6 +143,7 @@ const member = [
     id: 7,
     headImg: 'assets/team/zfanzhi/banner.jpg',
     teamName: '曾凡芝儿科医生',
+    manage: 'pediatric',
     memberData: [
       {
         img: 'assets/team/zfanzhi/doctor.jpg',
@@ -190,6 +191,7 @@ const member = [
     id: 10,
     headImg: 'assets/team/guoyu/banner.jpg',
     teamName: '郭钰医生',
+    manage: 'TCM',
     memberData: [
       {
         img: 'assets/team/guoyu/doctor.jpg',

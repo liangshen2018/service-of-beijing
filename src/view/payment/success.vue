@@ -1,10 +1,12 @@
 <template>
-    <div class="page">
-        <div class="icon">
-            <i class="mint-toast-icon mintui mintui-field-success"></i>
+    <div class="page_info">
+        <div class="page">
+            <div class="icon">
+                <i class="mint-toast-icon mintui mintui-field-success"></i>
+            </div>
+            <p class="success">恭喜您支付成功</p>
+            <p>购买服务包成功后，请选择一位医生成为您的家庭医生。</p>
         </div>
-        <p class="success">恭喜您支付成功</p>
-        <p>购买服务包成功后，请选择一位医生成为您的家庭医生。</p>
         <div class="btn" @click="handleTeam">签约家庭医生</div>
     </div>
 </template>
@@ -14,7 +16,7 @@ export default {
     methods: {
         handleTeam() {
             this.$router.push({
-                name: "doctorTeam",
+                name: "doctorTeam"
             });
         }
     }
